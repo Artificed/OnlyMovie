@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "522326192856",
+    "project_id": "onlymovie-27550",
+    "storage_bucket": "onlymovie-27550.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:522326192856:android:ca7c049594c599193e9dad",
+        "android_client_info": {
+          "package_name": "com.example.onlymovie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaG3CsqwQOn8Ul3vEg5x739bBNsFO8I1w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
