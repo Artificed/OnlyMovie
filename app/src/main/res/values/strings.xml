@@ -7,4 +7,9 @@
     <string name="click_to_login">Click to Login</string>
     <string name="click_to_register">Click to Register</string>
     <string name="logout">LOGOUT</string>
+    <string name="find">Find At OnlyMovie</string>
+    <string name="location">JAKARTA</string>
+    <string name="home">Home</string>
+    <string name="tickets">Tickets</string>
+    <string name="movies">Movies</string>
 </resources>
