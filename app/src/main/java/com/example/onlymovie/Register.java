@@ -29,7 +29,7 @@
 
         public class Register extends AppCompatActivity {
 
-            TextInputEditText editTextFullName, editTextEmail, editTextPassword;
+            TextInputEditText editTextUsername, editTextFullName, editTextEmail, editTextPassword;
             Button buttonReg;
             FirebaseAuth mAuth;
             FirebaseFirestore db;
@@ -52,6 +52,7 @@
                 mAuth = FirebaseAuth.getInstance();
                 db = FirebaseFirestore.getInstance();
                 editTextFullName = findViewById(R.id.fullName);
+                editTextUsername = findViewById(R.id.username);
                 editTextEmail = findViewById(R.id.email);
                 editTextPassword = findViewById(R.id.password);
                 buttonReg = findViewById(R.id.btnRegister);
@@ -70,7 +71,8 @@
                     @Override
                     public void onClick(View view) {
                         progressBar.setVisibility(View.VISIBLE);
-                        String fullName, email, password;
+                        String fullName, email, password, username;
+                        username = String.valueOf(editTextUsername.getText());
                         fullName = String.valueOf(editTextFullName.getText());
                         email = String.valueOf(editTextEmail.getText());
                         password = String.valueOf(editTextPassword.getText());
@@ -85,6 +87,16 @@
                             return;
                         }
 
+                        if(TextUtils.isEmpty(username)) {
+                            Toast.makeText(Register.this, "Enter username", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if(TextUtils.isEmpty(fullName)) {
+                            Toast.makeText(Register.this, "Enter fullname", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         mAuth.createUserWithEmailAndPassword(email, password)
                                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                     @Override
@@ -93,7 +105,7 @@
                                         if (task.isSuccessful()) {
                                             String userId = mAuth.getCurrentUser().getUid();
 
-                                            User user = new User(fullName, email);
+                                            User user = new User(fullName, email, username);
 
                                             db.collection("users").document(userId)
                                                             .set(user)

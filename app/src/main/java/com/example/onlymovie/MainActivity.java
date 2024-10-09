@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth auth;
     Button button;
+    Button navigationButton;
     TextView textView;
     FirebaseUser user;
 
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         button = findViewById(R.id.logout);
+        navigationButton = findViewById(R.id.navigateProfilePage);
         user = auth.getCurrentUser();
         textView = findViewById(R.id.user_details);
 
@@ -46,6 +48,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(getApplicationContext(), Login.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        navigationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Profile.class);
                 startActivity(intent);
                 finish();
             }
