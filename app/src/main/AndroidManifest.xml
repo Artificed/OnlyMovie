@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -15,17 +16,26 @@
         android:theme="@style/Theme.Material3.Light"
         tools:targetApi="31">
         <activity
-            android:name=".Profile"
+            android:name=".pages.SeriesDetail"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".pages.MovieDetail"
             android:exported="false" />
         <activity
-            android:name=".Register"
+            android:name=".pages.Home"
+            android:exported="false" />
+        <activity
+            android:name=".pages.Profile"
+            android:exported="false" />
+        <activity
+            android:name=".pages.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".pages.Register"
             android:exported="false"
             android:theme="@style/Theme.Material3.Light.NoActionBar" />
         <activity
-            android:name=".Login"
+            android:name=".pages.Login"
             android:exported="true"
             android:theme="@style/Theme.Material3.Light.NoActionBar">
             <intent-filter>

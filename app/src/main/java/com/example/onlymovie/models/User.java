@@ -1,13 +1,14 @@
 package com.example.onlymovie.models;
 
 public class User {
-    private String fullName, email;
+    private String fullName, email, username;
 
     public User() {}
 
-    public User(String fullName, String email) {
+    public User(String fullName, String email, String username) {
         this.fullName = fullName;
         this.email = email;
+        this.username = username;
     }
 
     public String getFullName() {
@@ -17,4 +18,6 @@ public class User {
     public String getEmail() {
         return email;
     }
+
+    public String getUsername() {return username;}
 }
