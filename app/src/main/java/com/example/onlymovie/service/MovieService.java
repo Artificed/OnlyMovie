@@ -69,10 +69,14 @@ public class MovieService {
             @Override
             public void onResponse(Call<CreditResponse> call, Response<CreditResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d("API Response", "test " + response.body().getCast());
                     List<Cast> castList = response.body().getCast();
+
+                    if (castList != null && castList.size() > 5) {
+                        castList = castList.subList(0, 5);
+                    }
+
                     callback.onSuccess(castList);
-                    Log.d("test", "test " + castList);
+                    Log.d("API Response", "First 5 Casts: " + castList);
                 } else {
                     callback.onFailure("Error fetching movie credits");
                 }
@@ -80,13 +84,13 @@ public class MovieService {
 
             @Override
             public void onFailure(Call<CreditResponse> call, Throwable t) {
-                callback.onFailure("Error sini" + t.getMessage());
+                callback.onFailure("Error: " + t.getMessage());
             }
         });
     }
 
     public interface MovieServiceCallback {
-        void onSuccess(List<Movie> movieList);
+        void onSuccess(List<Movie> movies);
         void onFailure(String errorMessage);
     }
 

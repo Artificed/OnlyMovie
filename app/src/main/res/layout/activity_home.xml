@@ -13,20 +13,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Trending Movies"
-        android:id="@+id/titleHomeTrending"
+        android:id="@+id/titleMovieTrending"
         android:textSize="18sp"
         android:textStyle="bold"
         android:paddingBottom="8dp"
         android:gravity="start"/>
 
-    <ListView
-        android:id="@+id/listView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/trendingMovieList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="5dp"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"
+        android:smoothScrollbar="true"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Trending Series"
+        android:id="@+id/titleSeriesTrending"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingBottom="8dp"
+        android:gravity="start"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/trendingSeriesList"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:smoothScrollbar="true"/>
 
 </LinearLayout>

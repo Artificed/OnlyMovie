@@ -1,22 +1,22 @@
 package com.example.onlymovie.models;
 
 public class Series {
-    private String title;
+    private String name;
     private String poster_path;
     private Long id;
 
-    public Series(String title, String poster_path, Long id) {
-        this.title = title;
+    public Series(String name, String poster_path, Long id) {
+        this.name = name;
         this.poster_path = poster_path;
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPoster_path() {

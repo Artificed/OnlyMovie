@@ -8,15 +8,16 @@
     <ImageView
         android:id="@+id/movieImage"
         android:layout_width="150dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
+        android:layout_height="150dp"
+        android:layout_gravity="left"
         android:src="@drawable/ic_launcher_background"/>
 
     <TextView
         android:id="@+id/movieTitle"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:text="Movie Title"
+        android:layout_gravity="center"
         android:textSize="14sp"
         android:gravity="center"
         android:paddingTop="8dp"/>

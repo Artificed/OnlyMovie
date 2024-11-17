@@ -10,6 +10,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.onlymovie.R;
 import com.example.onlymovie.adapter.CreditAdapter;
@@ -28,12 +30,10 @@ public class MovieDetail extends AppCompatActivity {
     private Long movieId;
     private ImageView movieImage;
 
-    private String baseImageUrl = "https://image.tmdb.org/t/p/w300/";
-    private static final String API_KEY = "d87f651a6b4efe803d9bb8e7b6cc5871";
     private CreditAdapter creditAdapter;
     private ArrayList<Cast> movieCasts = new ArrayList<>();
 
-    private ListView creditListView;
+    private RecyclerView creditListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,10 @@ public class MovieDetail extends AppCompatActivity {
         movieRuntime = findViewById(R.id.movieRuntime);
         movieVoteAverage = findViewById(R.id.movieVoteAverage);
         backButton = findViewById(R.id.backButton);
-        creditListView = findViewById(R.id.creditListView);
+        creditListView = findViewById(R.id.creditRecyclerView);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        creditListView.setLayoutManager(layoutManager);
 
         // Area Setup Credit Adapter (For Actors)
         creditAdapter = new CreditAdapter(this, movieCasts);

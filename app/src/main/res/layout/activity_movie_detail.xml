@@ -38,15 +38,11 @@
         android:layout_height="wrap_content"
         android:id="@+id/movieVoteAverage" />
 
-    <ListView
-        android:id="@+id/creditListView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/creditRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="5dp"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"
-        android:smoothScrollbar="true"/>
+        android:layout_marginTop="10dp"/>
 
     <Button
         android:layout_width="wrap_content"
