@@ -59,7 +59,14 @@ public class MovieDetail extends AppCompatActivity {
         LinearLayoutManager layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         movieRecommendationListView.setLayoutManager(layoutManager2);
 
-        creditAdapter = new CreditAdapter(this, movieCasts);
+        creditAdapter = new CreditAdapter(this, movieCasts, new CreditAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Cast cast) {
+                Intent intent = new Intent(MovieDetail.this, PeopleDetail.class);
+                intent.putExtra("person-id", cast.getId());
+                startActivity(intent);
+            }
+        });
         creditListView.setAdapter(creditAdapter);
 
         movieAdapter = new MovieAdapter(this, movieRecommendations, new MovieAdapter.OnItemClickListener() {
@@ -72,8 +79,6 @@ public class MovieDetail extends AppCompatActivity {
         });
 
         movieRecommendationListView.setAdapter(movieAdapter);
-
-
 
         Intent intent = getIntent();
         movieId = intent.getLongExtra("movie-id", -1);
