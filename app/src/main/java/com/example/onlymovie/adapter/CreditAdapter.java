@@ -24,37 +24,32 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
 
     public CreditAdapter(Context context, ArrayList<Cast> casts) {
         this.context = context;
-        this.casts = casts;
+        this.casts = (casts != null) ? casts : new ArrayList<>();
     }
 
-    // ViewHolder to hold references to the views
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView actorName;
         ImageView actorImage;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            actorName = itemView.findViewById(R.id.movieActorText);  // TextView for actor name
-            actorImage = itemView.findViewById(R.id.movieActorImage);  // ImageView for actor image
+            actorName = itemView.findViewById(R.id.movieActorText);
+            actorImage = itemView.findViewById(R.id.movieActorImage);
         }
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // Inflate the layout for each item in the RecyclerView
         View view = LayoutInflater.from(context).inflate(R.layout.list_item_credit, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // Get the cast member for the current position
         Cast castMember = casts.get(position);
 
-        // Set the actor name in the TextView
         holder.actorName.setText(castMember.getName());
 
-        // Load the actor image using Glide
         String imageUrl = castMember.getProfile_path();
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Glide.with(context)
@@ -68,7 +63,7 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return casts.size();  // Return the size of your data list
+        return casts.size();
     }
 }
 

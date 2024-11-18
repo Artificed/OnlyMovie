@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.onlymovie.R;
 import com.example.onlymovie.adapter.CreditAdapter;
+import com.example.onlymovie.adapter.MovieAdapter;
 import com.example.onlymovie.models.Cast;
 import com.example.onlymovie.models.Movie;
 import com.example.onlymovie.service.ImageService;
@@ -31,9 +32,11 @@ public class MovieDetail extends AppCompatActivity {
     private ImageView movieImage;
 
     private CreditAdapter creditAdapter;
+    private MovieAdapter movieAdapter;
     private ArrayList<Cast> movieCasts = new ArrayList<>();
+    private ArrayList<Movie> movieRecommendations = new ArrayList<>();
 
-    private RecyclerView creditListView;
+    private RecyclerView creditListView, movieRecommendationListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +51,30 @@ public class MovieDetail extends AppCompatActivity {
         movieVoteAverage = findViewById(R.id.movieVoteAverage);
         backButton = findViewById(R.id.backButton);
         creditListView = findViewById(R.id.creditRecyclerView);
+        movieRecommendationListView = findViewById(R.id.movieRecommendationView);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         creditListView.setLayoutManager(layoutManager);
 
-        // Area Setup Credit Adapter (For Actors)
+        LinearLayoutManager layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        movieRecommendationListView.setLayoutManager(layoutManager2);
+
         creditAdapter = new CreditAdapter(this, movieCasts);
         creditListView.setAdapter(creditAdapter);
 
-        // Receiving intent from home
+        movieAdapter = new MovieAdapter(this, movieRecommendations, new MovieAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Movie movie) {
+                Intent intent = new Intent(MovieDetail.this, MovieDetail.class);
+                intent.putExtra("movie-id", movie.getId());
+                startActivity(intent);
+            }
+        });
+
+        movieRecommendationListView.setAdapter(movieAdapter);
+
+
+
         Intent intent = getIntent();
         movieId = intent.getLongExtra("movie-id", -1);
 
@@ -65,6 +83,7 @@ public class MovieDetail extends AppCompatActivity {
         } else {
             fetchMovieById(movieId);
             fetchMovieCasts(movieId);
+            fetchMovieRecommendations(movieId);
         }
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -118,11 +137,30 @@ public class MovieDetail extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                // Log and show the failure message to the user
                 Log.e("MovieDetail", "Failed to fetch movie credits: " + errorMessage);
                 movieTitle.setText("Failed to load cast information.");
             }
         });
+    }
 
+    private void fetchMovieRecommendations(Long movieId) {
+        if (movieId == 0) {
+            movieTitle.setText("Invalid Movie Id");
+            return;
+        }
+
+        MovieService.fetchMovieRecommendations(movieId, new MovieService.MovieServiceCallback() {
+            @Override
+            public void onSuccess(List<Movie> movies) {
+                movieRecommendations.clear();
+                movieRecommendations.addAll(movies);
+                movieAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                movieTitle.setText("Failed to load movie recommendations.");
+            }
+        });
     }
 }

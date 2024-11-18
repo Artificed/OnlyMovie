@@ -3,6 +3,7 @@ package com.example.onlymovie.response;
 import com.example.onlymovie.models.Cast;
 import com.example.onlymovie.models.Crew;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CreditResponse {
@@ -27,7 +28,7 @@ public class CreditResponse {
     }
 
     public List<Crew> getCrew() {
-        return crew;
+        return crew != null ? crew : new ArrayList<>();
     }
 
     public void setCrew(List<Crew> crew) {

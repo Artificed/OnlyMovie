@@ -2,7 +2,9 @@ package com.example.onlymovie.service;
 
 import android.util.Log;
 
+import com.example.onlymovie.models.Cast;
 import com.example.onlymovie.models.Series;
+import com.example.onlymovie.response.CreditResponse;
 import com.example.onlymovie.response.SeriesResponse;
 
 import java.util.List;
@@ -61,6 +63,31 @@ public class SeriesService {
         });
     }
 
+    public static void fetchSeriesCredits(Long seriesId, final SeriesService.CreditServiceCallback callback) {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<CreditResponse> call = apiService.getMovieCredits(seriesId, "d87f651a6b4efe803d9bb8e7b6cc5871");
+
+        call.enqueue(new Callback<CreditResponse>() {
+            @Override
+            public void onResponse(Call<CreditResponse> call, Response<CreditResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Cast> castList = response.body().getCast();
+
+                    callback.onSuccess(castList);
+                    Log.d("API Response", "First 5 Casts: " + castList);
+                } else {
+                    callback.onFailure("Error fetching movie credits");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CreditResponse> call, Throwable t) {
+                callback.onFailure("Error: " + t.getMessage());
+            }
+        });
+    }
+
     public interface SeriesServiceCallback {
         void onSuccess(List<Series> series);
         void onFailure(String errorMessage);
@@ -68,6 +95,11 @@ public class SeriesService {
 
     public interface SeriesDetailCallback {
         void onSuccess(Series series);
+        void onFailure(String errorMessage);
+    }
+
+    public interface CreditServiceCallback {
+        void onSuccess(List<Cast> casts);
         void onFailure(String errorMessage);
     }
 }

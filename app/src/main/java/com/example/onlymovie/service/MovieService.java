@@ -89,6 +89,29 @@ public class MovieService {
         });
     }
 
+    public static void fetchMovieRecommendations(Long movieId, final MovieServiceCallback callback) {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<MovieResponse> call = apiService.getMovieRecommendations(movieId, API_KEY);
+
+        call.enqueue(new Callback<MovieResponse>() {
+            @Override
+            public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Movie> movieList = response.body().getResults();
+                    callback.onSuccess(movieList);
+                } else {
+                    callback.onFailure("Error fetching movie recommendations");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieResponse> call, Throwable t) {
+                callback.onFailure("Error fetching movie recommendations");
+            }
+        });
+    }
+
     public interface MovieServiceCallback {
         void onSuccess(List<Movie> movies);
         void onFailure(String errorMessage);

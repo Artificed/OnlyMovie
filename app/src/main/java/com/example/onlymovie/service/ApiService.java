@@ -22,11 +22,17 @@ public interface ApiService {
     @GET("movie/{movie_id}/credits")
     Call<CreditResponse> getMovieCredits(@Path("movie_id") Long movieId, @Query("api_key") String apiKey);
 
+    @GET("movie/{movie_id}/recommendations")
+    Call<MovieResponse> getMovieRecommendations(@Path("movie_id") Long movieId, @Query("api_key") String apiKey);
+
     @GET("trending/tv/day")
     Call<SeriesResponse> getTrendingSeries(@Query("api_key") String apiKey);
 
     @GET("tv/{series_id}")
     Call<Series> getSeriesDetails(@Path("series_id") Long seriesId, @Query("api_key") String apiKey);
+
+    @GET("tv/{series_id}/credits")
+    Call<CreditResponse> getSeriesCredits(@Path("series_id") Long seriesId, @Query("api_key") String apiKey);
 }
 
 
