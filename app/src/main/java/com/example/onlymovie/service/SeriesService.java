@@ -77,13 +77,37 @@ public class SeriesService {
                     callback.onSuccess(castList);
                     Log.d("API Response", "First 5 Casts: " + castList);
                 } else {
-                    callback.onFailure("Error fetching movie credits");
+                    callback.onFailure("Error fetching series credits");
                 }
             }
 
             @Override
             public void onFailure(Call<CreditResponse> call, Throwable t) {
                 callback.onFailure("Error: " + t.getMessage());
+            }
+        });
+    }
+
+    public static void fetchSeriesRecommendations(Long seriesId, final SeriesServiceCallback callback) {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<SeriesResponse> call = apiService.getSeriesRecommendations(seriesId, API_KEY);
+
+        call.enqueue(new Callback<SeriesResponse>() {
+            @Override
+            public void onResponse(Call<SeriesResponse> call, Response<SeriesResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Series> seriesList = response.body().getResults();
+
+                    callback.onSuccess(seriesList);
+                } else {
+                    callback.onFailure("Error fetching series recommendations");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SeriesResponse> call, Throwable t) {
+                callback.onFailure("Error fetching series recommendations");
             }
         });
     }
