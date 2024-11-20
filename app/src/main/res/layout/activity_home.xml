@@ -14,9 +14,9 @@
         android:layout_height="wrap_content"
         android:text="Trending Movies"
         android:id="@+id/titleMovieTrending"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:paddingBottom="8dp"
+        android:paddingBottom="10dp"
         android:gravity="start"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -30,9 +30,10 @@
         android:layout_height="wrap_content"
         android:text="Trending Series"
         android:id="@+id/titleSeriesTrending"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:paddingBottom="8dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="16dp"
         android:gravity="start"/>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -44,11 +45,12 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Trending Series"
+        android:text="Trending People"
         android:id="@+id/titlePeopleTrending"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:paddingBottom="8dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="16dp"
         android:gravity="start"/>
 
     <androidx.recyclerview.widget.RecyclerView

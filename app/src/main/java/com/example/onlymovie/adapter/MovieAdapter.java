@@ -20,7 +20,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     private Context context;
     private List<Movie> movieList;
     private OnItemClickListener listener;
-    private static String baseImageUrl = "https://image.tmdb.org/t/p/w300/";
+    private static String baseImageUrl = "https://image.tmdb.org/t/p/w500/";
 
     public MovieAdapter(Context context, List<Movie> movieList, OnItemClickListener listener) {
         this.context = context;

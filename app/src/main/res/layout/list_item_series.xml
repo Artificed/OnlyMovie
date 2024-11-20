@@ -3,14 +3,15 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:layout_marginEnd="16dp" >
 
     <ImageView
         android:id="@+id/seriesImage"
-        android:layout_width="150dp"
+        android:layout_width="wrap_content"
         android:layout_height="150dp"
-        android:layout_gravity="left"
+        android:layout_gravity="start"
         android:src="@drawable/ic_launcher_background"/>
+
 
     <TextView
         android:id="@+id/seriesName"

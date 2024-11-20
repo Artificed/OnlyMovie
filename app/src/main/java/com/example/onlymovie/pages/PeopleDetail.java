@@ -20,7 +20,7 @@ import com.example.onlymovie.service.PeopleService;
 
 public class PeopleDetail extends AppCompatActivity {
 
-    private TextView actorName;
+    private TextView actorName, actorBiography, actorBirthday, actorPopularity;
     private ImageView actorImage;
     private Button backButton;
     private Long personId;
@@ -33,6 +33,9 @@ public class PeopleDetail extends AppCompatActivity {
         actorName = findViewById(R.id.actorName);
         actorImage = findViewById(R.id.actorImage);
         backButton = findViewById(R.id.backButton);
+        actorBiography = findViewById(R.id.actorBiography);
+        actorBirthday = findViewById(R.id.actorBirthday);
+        actorPopularity = findViewById(R.id.actorPopularity);
 
         Intent intent = getIntent();
         personId = intent.getLongExtra("person-id", -1);
@@ -62,6 +65,9 @@ public class PeopleDetail extends AppCompatActivity {
             public void onSuccess(People people) {
                 actorName.setText(people.getName());
                 String imageUrl = people.getProfile_path();
+                actorBiography.setText(people.getBiography());
+                actorBirthday.setText(people.getBirthday());
+                actorPopularity.setText(String.format("Rating: %.1f", people.getPopularity()));
 
                 if (!imageUrl.isEmpty() && imageUrl != null) {
                     ImageService.loadImage(imageUrl, PeopleDetail.this, actorImage);

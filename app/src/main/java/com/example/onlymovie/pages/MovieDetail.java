@@ -20,6 +20,7 @@ import com.example.onlymovie.models.Cast;
 import com.example.onlymovie.models.Movie;
 import com.example.onlymovie.service.ImageService;
 import com.example.onlymovie.service.MovieService;
+import com.example.onlymovie.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,9 +109,11 @@ public class MovieDetail extends AppCompatActivity {
         MovieService.fetchMovieById(movieId, new MovieService.MovieDetailCallback() {
             @Override
             public void onSuccess(Movie movie) {
-                movieTitle.setText(movie.getTitle());
+                String release_year = Utils.getYear(movie.getRelease_date());
+
+                movieTitle.setText(movie.getTitle() + " (" + release_year + ")");
                 movieOverview.setText(movie.getOverview());
-                movieVoteAverage.setText(String.format("Rating: %.1f", movie.getVote_average()));
+                movieVoteAverage.setText(String.format("%.1f", movie.getVote_average()));
                 movieRuntime.setText(movie.getRuntime() + " minutes");
                 String imageUrl = movie.getPoster_path();
 

@@ -7,14 +7,16 @@ public class Movie {
     private String overview;
     private Long runtime;
     private Double vote_average;
+    private String release_date;
 
-    public Movie(String title, String poster_path, Long id, String overview, Long runtime, Double vote_average) {
+    public Movie(String title, String poster_path, Long id, String overview, Long runtime, Double vote_average, String release_date) {
         this.title = title;
         this.poster_path = poster_path;
         this.id = id;
         this.overview = overview;
         this.runtime = runtime;
         this.vote_average = vote_average;
+        this.release_date = release_date;
     }
 
     public String getTitle() {
@@ -63,5 +65,13 @@ public class Movie {
 
     public void setVote_average(Double vote_average) {
         this.vote_average = vote_average;
+    }
+
+    public String getRelease_date() {
+        return release_date;
+    }
+
+    public void setRelease_date(String release_date) {
+        this.release_date = release_date;
     }
 }
