@@ -11,31 +11,91 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:gravity="start"
         android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:id="@+id/actorImage"
+            android:layout_marginEnd="16dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/actorName" />
+            android:id="@+id/actorName"
+            android:textSize="28sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold" />
 
-        <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:id="@+id/actorImage" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/personRole"
+                android:textSize="24sp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/actorBirthday"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp" />
+
+        </LinearLayout>
+    </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/actorBiography" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/actorBirthday" />
+            android:id="@+id/actorBiography"
+            android:layout_marginTop="16dp"
+            android:textSize="16dp"/>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/actorPopularity" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Featured Movies"
+            android:textSize="28sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginTop="15dp"
+            android:lineSpacingExtra="5dp"
+            android:textAlignment="textStart" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/personCombinedCredits"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"/>
+
+
+
+
+
 
         <Button
             android:layout_width="wrap_content"

@@ -1,9 +1,16 @@
 package com.example.onlymovie.service;
 
-import com.example.onlymovie.models.Cast;
-import com.example.onlymovie.models.People;
-import com.example.onlymovie.response.PeopleResponse;
+import android.util.Log;
 
+import com.example.onlymovie.models.Cast;
+import com.example.onlymovie.models.Movie;
+import com.example.onlymovie.models.MovieCredit;
+import com.example.onlymovie.models.People;
+import com.example.onlymovie.response.MovieCreditResponse;
+import com.example.onlymovie.response.PeopleResponse;
+import com.example.onlymovie.utils.Enum;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -46,6 +53,7 @@ public class PeopleService {
             public void onResponse(Call<People> call, Response<People> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
+                    Log.d("response", "test" + response.body());
                 } else {
                     callback.onFailure("Error fetching people detail");
                 }
@@ -58,6 +66,64 @@ public class PeopleService {
         });
     }
 
+    public static void fetchActorMovieCredit(Long personId, final ActorMovieCreditServiceCallback callback) {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<MovieCreditResponse> call = apiService.getPersonCredits(personId, API_KEY);
+
+        call.enqueue(new Callback<MovieCreditResponse>() {
+            @Override
+            public void onResponse(Call<MovieCreditResponse> call, Response<MovieCreditResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<MovieCredit> movieList = response.body().getCast();
+                    callback.onSuccess(movieList);
+                    Log.d("test", "response: " + movieList);
+                } else {
+                    callback.onFailure("Error fetching people movie credit");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieCreditResponse> call, Throwable t) {
+                callback.onFailure("Error fetching people movie credit");
+            }
+        });
+    }
+
+    public static void fetchDirectorMovieCredit(Long personId, final DirectorMovieCreditServiceCallback callback) {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<MovieCreditResponse> call = apiService.getPersonCredits(personId, API_KEY);
+
+        call.enqueue(new Callback<MovieCreditResponse>() {
+            @Override
+            public void onResponse(Call<MovieCreditResponse> call, Response<MovieCreditResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<MovieCredit> movieList = response.body().getCrew();
+                    List<MovieCredit> directedMovies = new ArrayList<>();
+
+                    for (MovieCredit movieCredit : movieList) {
+                        if (movieCredit.getJob().equals(Enum.JOB.Director.name())) {
+                            directedMovies.add(movieCredit);
+                        }
+                    }
+
+                    callback.onSuccess(directedMovies);
+                    Log.d("test", "Director Movies: " + directedMovies);
+                } else {
+                    callback.onFailure("Error fetching people movie credit");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MovieCreditResponse> call, Throwable t) {
+                callback.onFailure("Error fetching people movie credit");
+            }
+        });
+    }
+
+
+
 
     public interface PeopleServiceCallback {
         void onSuccess(List<Cast> casts);
@@ -66,6 +132,16 @@ public class PeopleService {
 
     public interface PeopleDetailServiceCallback {
         void onSuccess(People people);
+        void onFailure(String errorMessage);
+    }
+
+    public interface ActorMovieCreditServiceCallback {
+        void onSuccess(List<MovieCredit> casts);
+        void onFailure(String errorMessage);
+    }
+
+    public interface DirectorMovieCreditServiceCallback {
+        void onSuccess(List<MovieCredit> crew);
         void onFailure(String errorMessage);
     }
 

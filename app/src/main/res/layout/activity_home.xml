@@ -59,4 +59,17 @@
         android:layout_height="wrap_content"
         android:smoothScrollbar="true"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/backButton"
+        android:text="Go Back"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:backgroundTint="@android:color/darker_gray"
+        android:padding="12dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_gravity="center"/>
+
 </LinearLayout>

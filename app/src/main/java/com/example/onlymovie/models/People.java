@@ -6,13 +6,15 @@ public class People {
     private String biography;
     private String birthday;
     private Double popularity;
+    private String known_for_department;
 
-    public People(String name, String profile_path, String biography, String birthday, Double popularity) {
+    public People(String name, String profile_path, String biography, String birthday, Double popularity, String known_for_department) {
         this.name = name;
         this.profile_path = profile_path;
         this.biography = biography;
         this.birthday = birthday;
         this.popularity = popularity;
+        this.known_for_department = known_for_department;
     }
 
     public String getName() {
@@ -53,5 +55,13 @@ public class People {
 
     public void setPopularity(Double popularity) {
         this.popularity = popularity;
+    }
+
+    public String getKnown_for_department() {
+        return known_for_department;
+    }
+
+    public void setKnown_for_department(String known_for_department) {
+        this.known_for_department = known_for_department;
     }
 }
