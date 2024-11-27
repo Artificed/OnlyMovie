@@ -9,7 +9,7 @@ import com.bumptech.glide.Glide;
 
 public class ImageService {
 
-    private static String baseImageUrl = "https://image.tmdb.org/t/p/w300/";
+    private static String baseImageUrl = "https://image.tmdb.org/t/p/w500/";
     private static final String API_KEY = "d87f651a6b4efe803d9bb8e7b6cc5871";
 
     public static void loadImage(String imagePath, FragmentActivity activity, ImageView imageView) {

@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +37,7 @@ public class Home extends AppCompatActivity {
     private MovieAdapter movieAdapter;
     private SeriesAdapter seriesAdapter;
     private CreditAdapter creditAdapter;
+    private Button backButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,7 @@ public class Home extends AppCompatActivity {
         titleTrendingPeople = findViewById(R.id.titlePeopleTrending);
         peopleListView = findViewById(R.id.trendingPeopleList);
 
-
+        backButton = findViewById(R.id.backButton);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         LinearLayoutManager layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -89,6 +92,13 @@ public class Home extends AppCompatActivity {
             }
         });
         peopleListView.setAdapter(creditAdapter);
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
 
         fetchingData();
     }

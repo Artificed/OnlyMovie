@@ -1,11 +1,11 @@
 package com.example.onlymovie.service;
 
 
-import com.example.onlymovie.models.Cast;
 import com.example.onlymovie.models.Movie;
 import com.example.onlymovie.models.People;
 import com.example.onlymovie.models.Series;
 import com.example.onlymovie.response.CreditResponse;
+import com.example.onlymovie.response.MovieCreditResponse;
 import com.example.onlymovie.response.MovieResponse;
 import com.example.onlymovie.response.PeopleResponse;
 import com.example.onlymovie.response.SeriesResponse;
@@ -45,6 +45,11 @@ public interface ApiService {
 
     @GET("person/{person_id}")
     Call<People> getPersonDetail(@Path("person_id") Long personId, @Query("api_key") String apiKey);
+
+    @GET("person/{person_id}/movie_credits")
+    Call<MovieCreditResponse> getPersonCredits(@Path("person_id") Long personId, @Query("api_key") String apiKey);
+
+
 }
 
 
