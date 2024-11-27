@@ -66,7 +66,7 @@ public class SeriesService {
     public static void fetchSeriesCredits(Long seriesId, final SeriesService.CreditServiceCallback callback) {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-        Call<CreditResponse> call = apiService.getMovieCredits(seriesId, "d87f651a6b4efe803d9bb8e7b6cc5871");
+        Call<CreditResponse> call = apiService.getSeriesCredits(seriesId, "d87f651a6b4efe803d9bb8e7b6cc5871");
 
         call.enqueue(new Callback<CreditResponse>() {
             @Override

@@ -3,6 +3,7 @@ package com.example.onlymovie.pages;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,50 +17,56 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.example.onlymovie.R;
+import com.example.onlymovie.service.UserService;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import java.util.HashMap;
 
 public class Profile extends AppCompatActivity {
 
-    TextInputEditText editTextUsername, editTextFullname;
-    Button editProfileButton, uploadImageButton;
-    FirebaseAuth mAuth;
-    FirebaseFirestore db;
-    ProgressBar progressBar;
-    TextView textView;
+    private TextInputEditText editTextUsername, editTextFullname;
+    private Button editProfileButton, uploadImageButton;
+
+    private FirebaseAuth mAuth;
+    private FirebaseUser currentUser;
+    private FirebaseFirestore db;
+    private ProgressBar progressBar;
+    private TextView profileFullname, profileUsername;
     private static final int PICK_IMAGE_REQUEST = 1;
-    Uri imageUri;
-    ImageView profileImageView;
+    private Uri imageUri;
+    private ImageView profileImageView;
     private ActivityResultLauncher<Intent> getImageLauncher;
+    private UserService userService;
 
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null) {
+        currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
             String userId = currentUser.getUid();
-            db.collection("users").document(userId)
-                    .get()
+            userService.loadUserProfileData(Profile.this, userId, profileFullname, profileUsername, profileImageView);
+
+            db.collection("users").document(userId).get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null) {
-                            String username = task.getResult().getString("username");
-                            editTextUsername.setText(username);
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            String username = documentSnapshot.getString("username");
+                            String fullName = documentSnapshot.getString("fullName");
 
-                            String fullName = task.getResult().getString("fullName");
-                            editTextFullname.setText(fullName);
+                            if (username != null) {
+                                editTextUsername.setText(username);
+                            }
+                            if (fullName != null) {
+                                editTextFullname.setText(fullName);
+                            }
 
                             String imageUrl = task.getResult().getString("profileImageUrl");
                             if (imageUrl != null && !imageUrl.isEmpty()) {
                                 Glide.with(Profile.this).load(imageUrl).into(profileImageView);
                             }
+
                         } else {
                             Toast.makeText(Profile.this, "Failed to load user data", Toast.LENGTH_SHORT).show();
                         }
@@ -79,19 +86,54 @@ public class Profile extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         uploadImageButton = findViewById(R.id.btnUploadImage);
         profileImageView = findViewById(R.id.profileImageView);
+        profileFullname = findViewById(R.id.profileFullname);
+        profileUsername = findViewById(R.id.profileUsername);
+
+        userService = new UserService();
 
         getImageLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                 imageUri = result.getData().getData();
                 profileImageView.setImageURI(imageUri);
-                uploadImageToFirebaseStorage();
+                userService.uploadImageToFirebaseStorage(Profile.this, imageUri);
             }
         });
 
         editProfileButton.setOnClickListener(v -> {
             String newUsername = editTextUsername.getText().toString();
-            if (!newUsername.isEmpty()) {
-                updateUsername(newUsername);
+            String newFullname = editTextFullname.getText().toString();
+
+            editProfileButton.setEnabled(false);
+            progressBar.setVisibility(View.VISIBLE);
+
+            if (!newUsername.isEmpty() || !newFullname.isEmpty()) {
+                if (!newUsername.isEmpty()) {
+                    userService.updateUsername(Profile.this, newUsername);
+                }
+
+                if (!newFullname.isEmpty()) {
+                    userService.updateFullname(Profile.this, newFullname);
+                }
+
+                if (!newUsername.isEmpty()) {
+                    profileUsername.setText(newUsername);
+                }
+                if (!newFullname.isEmpty()) {
+                    profileFullname.setText(newFullname);
+                }
+
+
+
+                new Handler().postDelayed(() -> {
+                    editProfileButton.setEnabled(true);
+                    progressBar.setVisibility(View.GONE);
+                }, 5000);
+
+                onStart();
+            } else {
+                Toast.makeText(Profile.this, "Please modify at least one field", Toast.LENGTH_SHORT).show();
+                editProfileButton.setEnabled(true);
+                progressBar.setVisibility(View.GONE);
             }
         });
 
@@ -104,77 +146,4 @@ public class Profile extends AppCompatActivity {
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         getImageLauncher.launch(Intent.createChooser(intent, "Select Picture"));
     }
-
-    private void updateUsername(String newUsername) {
-        progressBar.setVisibility(View.VISIBLE);
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid();
-
-            db.collection("users")
-                    .whereEqualTo("username", newUsername)
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                            progressBar.setVisibility(View.GONE);
-                            Toast.makeText(Profile.this, "Username already exists. Please choose another.", Toast.LENGTH_SHORT).show();
-                        } else {
-                            db.collection("users").document(userId)
-                                    .update("username", newUsername)
-                                    .addOnSuccessListener(aVoid -> {
-                                        progressBar.setVisibility(View.GONE);
-                                        Toast.makeText(Profile.this, "Username updated successfully", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        progressBar.setVisibility(View.GONE);
-                                        Toast.makeText(Profile.this, "Failed to update username: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    });
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(Profile.this, "Error checking username: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        }
-    }
-
-    private void uploadImageToFirebaseStorage() {
-        if (imageUri != null) {
-            progressBar.setVisibility(View.VISIBLE);
-            StorageReference storageRef = FirebaseStorage.getInstance().getReference("uploads/" + System.currentTimeMillis() + ".jpg");
-
-            storageRef.putFile(imageUri)
-                    .addOnSuccessListener(taskSnapshot -> {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(Profile.this, "Image uploaded successfully", Toast.LENGTH_SHORT).show();
-                        storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                            updateImageUrlInFirestore(uri.toString());
-                        });
-                    })
-                    .addOnFailureListener(e -> {
-                        progressBar.setVisibility(View.GONE);
-                        Toast.makeText(Profile.this, "Upload failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        }
-    }
-
-    private void updateImageUrlInFirestore(String imageUrl) {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            String userId = currentUser.getUid();
-            DocumentReference userDocRef = db.collection("users").document(userId);
-            userDocRef.set(
-                    new HashMap() {{
-                        put("profileImageUrl", imageUrl);
-                    }},
-                    SetOptions.merge()
-            ).addOnSuccessListener(aVoid -> {
-                Toast.makeText(Profile.this, "Image URL updated successfully", Toast.LENGTH_SHORT).show();
-            }).addOnFailureListener(e -> {
-                Toast.makeText(Profile.this, "Failed to update image URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            });
-        }
-    }
-
-
 }

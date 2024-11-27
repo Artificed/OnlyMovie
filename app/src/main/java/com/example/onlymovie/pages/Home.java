@@ -93,6 +93,13 @@ public class Home extends AppCompatActivity {
         });
         peopleListView.setAdapter(creditAdapter);
 
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
+
         fetchingData();
     }
 

@@ -2,6 +2,7 @@ package com.example.onlymovie.pages;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -81,6 +82,7 @@ public class SeriesDetail extends AppCompatActivity {
 
         Intent intent = getIntent();
         seriesId = intent.getLongExtra("series-id", -1);
+        Log.d("series id", "value: " + seriesId);
 
         if (seriesId == -1) {
             seriesName.setText("Invalid Series Id");
