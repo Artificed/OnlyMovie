@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     Button button;
     Button navigationButton;
     Button navigationButtonHome;
+    Button navigationSearch;
     TextView textView;
     FirebaseUser user;
 
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         button = findViewById(R.id.logout);
         navigationButton = findViewById(R.id.navigateProfilePage);
         navigationButtonHome = findViewById(R.id.navigateHomePage);
+        navigationSearch = findViewById(R.id.navigateSearchPage);
         user = auth.getCurrentUser();
         textView = findViewById(R.id.user_details);
 
@@ -68,5 +70,15 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        navigationSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Search.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
     }
 }

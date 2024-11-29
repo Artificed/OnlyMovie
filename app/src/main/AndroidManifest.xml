@@ -19,6 +19,9 @@
             android:name=".pages.Search"
             android:exported="false" />
         <activity
+            android:name=".pages.Search"
+            android:exported="false" />
+        <activity
             android:name=".pages.PeopleDetail"
             android:exported="false" />
         <activity

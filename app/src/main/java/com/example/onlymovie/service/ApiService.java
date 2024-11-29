@@ -8,6 +8,7 @@ import com.example.onlymovie.response.CreditResponse;
 import com.example.onlymovie.response.MovieCreditResponse;
 import com.example.onlymovie.response.MovieResponse;
 import com.example.onlymovie.response.PeopleResponse;
+import com.example.onlymovie.response.SearchResponse;
 import com.example.onlymovie.response.SeriesResponse;
 
 import retrofit2.Call;
@@ -49,7 +50,8 @@ public interface ApiService {
     @GET("person/{person_id}/movie_credits")
     Call<MovieCreditResponse> getPersonCredits(@Path("person_id") Long personId, @Query("api_key") String apiKey);
 
-
+    @GET("search/multi")
+    Call<SearchResponse> getSearchMulti(@Query("query") String query, @Query("api_key") String apiKey);
 }
 
 

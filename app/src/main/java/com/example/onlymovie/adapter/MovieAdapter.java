@@ -67,7 +67,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                         .error(R.drawable.ic_launcher_background)
                         .into(movieImage);
             } else {
-                movieImage.setImageResource(R.drawable.ic_launcher_background);
+                movieImage.setImageResource(R.drawable.logo);
+                int maxWidth = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.max_image_width);
+                ViewGroup.LayoutParams params = movieImage.getLayoutParams();
+                params.width = maxWidth;
+                movieImage.setLayoutParams(params);
             }
 
 

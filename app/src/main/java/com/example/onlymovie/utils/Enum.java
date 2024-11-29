@@ -3,8 +3,8 @@ package com.example.onlymovie.utils;
 public class Enum {
 
     public static enum MEDIATYPE {
-        movie,
-        tv
+        Movie,
+        Tv
     }
 
     public static enum KNOWN_FOR_DEPARTMENT {
@@ -13,6 +13,13 @@ public class Enum {
     }
 
     public static enum JOB {
-        Director
+        Director,
+        Actor
+    }
+
+    public static enum SearchResultType {
+        movie,
+        tv,
+        person
     }
 }

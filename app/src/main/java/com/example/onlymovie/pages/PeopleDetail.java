@@ -7,18 +7,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.onlymovie.R;
-import com.example.onlymovie.adapter.MovieAdapter;
 import com.example.onlymovie.adapter.MovieCreditAdapter;
-import com.example.onlymovie.models.Movie;
 import com.example.onlymovie.models.MovieCredit;
 import com.example.onlymovie.models.People;
 import com.example.onlymovie.service.ImageService;
@@ -90,32 +84,36 @@ public class PeopleDetail extends AppCompatActivity {
             return;
         }
 
-
         PeopleService.fetchPeopleDetail(personId, new PeopleService.PeopleDetailServiceCallback() {
             @Override
             public void onSuccess(People people) {
-                actorName.setText(people.getName());
+                actorName.setText(people.getName() != null ? people.getName() : "Name not available");
+
                 String imageUrl = people.getProfile_path();
-                actorBiography.setText(people.getBiography());
-                personRole.setText(people.getKnown_for_department());
-                actorBirthday.setText("Born: " + people.getBirthday());
-                actorPopularity.setText(String.format("Rating: %.1f", people.getPopularity()));
-
-                if (!imageUrl.isEmpty() && imageUrl != null) {
+                if (imageUrl != null && !imageUrl.isEmpty()) {
                     ImageService.loadImage(imageUrl, PeopleDetail.this, actorImage);
+                } else {
+                    actorImage.setImageResource(R.drawable.logo);
                 }
 
-                if (people.getKnown_for_department().equals(Enum.KNOWN_FOR_DEPARTMENT.Acting.name())) {
-                    fetchActorMovieCredit(personId);
-                }
-                else {
-                    fetchDirectorMovieCredit(personId);
+                actorBiography.setText(people.getBiography() != null ? people.getBiography() : "Biography not available");
+                personRole.setText(people.getKnown_for_department() != null ? people.getKnown_for_department() : "Role not available");
+                actorBirthday.setText(people.getBirthday() != null ? "Born: " + people.getBirthday() : "Birthday not available");
+                actorPopularity.setText(people.getPopularity() != null ? String.format("Rating: %.1f", people.getPopularity()) : "Rating not available");
+
+                if (people.getKnown_for_department() != null) {
+                    if (people.getKnown_for_department().equals(Enum.KNOWN_FOR_DEPARTMENT.Acting.name())) {
+                        fetchActorMovieCredit(personId);
+                    } else {
+                        fetchDirectorMovieCredit(personId);
+                    }
                 }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                actorName.setText("Failed to load movie details.");
+                actorName.setText("Failed to load person details.");
+                actorBiography.setText("Error: " + errorMessage);
             }
         });
     }
@@ -129,14 +127,20 @@ public class PeopleDetail extends AppCompatActivity {
         PeopleService.fetchActorMovieCredit(personId, new PeopleService.ActorMovieCreditServiceCallback() {
             @Override
             public void onSuccess(List<MovieCredit> casts) {
-                movieCredits.clear();
-                movieCredits.addAll(casts);
-                movieCreditAdapter.notifyDataSetChanged();
+                if (casts != null && !casts.isEmpty()) {
+                    movieCredits.clear();
+                    movieCredits.addAll(casts);
+                    movieCreditAdapter.notifyDataSetChanged();
+                } else {
+                    // Handle empty list or no credits
+                    movieCredits.clear();
+                    movieCreditAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-
+                // Handle failure to fetch credits
             }
         });
     }
@@ -150,14 +154,20 @@ public class PeopleDetail extends AppCompatActivity {
         PeopleService.fetchDirectorMovieCredit(personId, new PeopleService.DirectorMovieCreditServiceCallback() {
             @Override
             public void onSuccess(List<MovieCredit> crew) {
-                movieCredits.clear();
-                movieCredits.addAll(crew);
-                movieCreditAdapter.notifyDataSetChanged();
+                if (crew != null && !crew.isEmpty()) {
+                    movieCredits.clear();
+                    movieCredits.addAll(crew);
+                    movieCreditAdapter.notifyDataSetChanged();
+                } else {
+                    // Handle empty list or no credits
+                    movieCredits.clear();
+                    movieCreditAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-
+                // Handle failure to fetch credits
             }
         });
     }

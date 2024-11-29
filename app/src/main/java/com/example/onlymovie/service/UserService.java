@@ -95,12 +95,8 @@ public class UserService {
         });
     }
 
-    // Upload the image to Firebase Storage and then update Firestore
     public void uploadImageToFirebaseStorage(Context context, Uri imageUri) {
         if (imageUri != null) {
-            // Firebase Storage code for uploading image here
-            // After uploading, get the download URL and update Firestore with the image URL
-            // For example:
             StorageReference storageRef = FirebaseStorage.getInstance().getReference("uploads/" + System.currentTimeMillis() + ".jpg");
             storageRef.putFile(imageUri)
                     .addOnSuccessListener(taskSnapshot -> {

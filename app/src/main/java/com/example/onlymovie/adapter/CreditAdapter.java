@@ -64,10 +64,10 @@ public class CreditAdapter extends RecyclerView.Adapter<CreditAdapter.CreditView
             if (imageUrl != null && !imageUrl.isEmpty()) {
                 Glide.with(itemView.getContext())
                         .load(baseImageUrl + imageUrl + "?api_key=d87f651a6b4efe803d9bb8e7b6cc5871")
-                        .error(R.drawable.ic_launcher_background)  // Placeholder if the image fails to load
+                        .error(R.drawable.ic_launcher_background)
                         .into(actorImage);
             } else {
-                actorImage.setImageResource(R.drawable.ic_launcher_background);
+                actorImage.setImageResource(R.drawable.logo);
             }
 
             itemView.setOnClickListener(new View.OnClickListener() {

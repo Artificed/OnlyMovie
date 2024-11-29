@@ -69,7 +69,7 @@ public class SeriesAdapter extends RecyclerView.Adapter<SeriesAdapter.SeriesView
                         .error(R.drawable.ic_launcher_background)
                         .into(seriesImage);
             } else {
-                seriesImage.setImageResource(R.drawable.ic_launcher_background);
+                seriesImage.setImageResource(R.drawable.logo);
             }
 
             itemView.setOnClickListener(new View.OnClickListener() {

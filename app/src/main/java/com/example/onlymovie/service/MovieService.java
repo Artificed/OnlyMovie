@@ -4,8 +4,10 @@ import android.util.Log;
 
 import com.example.onlymovie.models.Cast;
 import com.example.onlymovie.models.Movie;
+import com.example.onlymovie.models.SearchResult;
 import com.example.onlymovie.response.CreditResponse;
 import com.example.onlymovie.response.MovieResponse;
+import com.example.onlymovie.response.SearchResponse;
 
 import java.util.List;
 
@@ -112,6 +114,29 @@ public class MovieService {
         });
     }
 
+    public static <T> void fetchSearchResult(String query, final SearchResultCallback callback) {
+        ApiService apiService = ApiClient.getClient().create(ApiService.class);
+
+        Call<SearchResponse> call = apiService.getSearchMulti(query, API_KEY);
+
+        call.enqueue(new Callback<SearchResponse>() {
+            @Override
+            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<SearchResult> results = response.body().getResults();
+                    callback.onSuccess(results);
+                } else {
+                    callback.onFailure("No results found");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SearchResponse> call, Throwable t) {
+                callback.onFailure(t.getMessage());
+            }
+        });
+    }
+
     public interface MovieServiceCallback {
         void onSuccess(List<Movie> movies);
         void onFailure(String errorMessage);
@@ -124,6 +149,11 @@ public class MovieService {
 
     public interface CreditServiceCallback {
         void onSuccess(List<Cast> castList);
+        void onFailure(String errorMessage);
+    }
+
+    public interface SearchResultCallback {
+        void onSuccess(List<SearchResult> results);
         void onFailure(String errorMessage);
     }
 }

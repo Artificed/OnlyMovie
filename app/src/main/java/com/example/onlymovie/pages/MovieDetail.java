@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,7 +43,6 @@ public class MovieDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        // Area Linking XML Component to Java
         movieImage = findViewById(R.id.movieImage);
         movieTitle = findViewById(R.id.movieTitle);
         movieOverview = findViewById(R.id.movieOverview);
@@ -78,7 +76,6 @@ public class MovieDetail extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         movieRecommendationListView.setAdapter(movieAdapter);
 
         Intent intent = getIntent();
@@ -92,10 +89,11 @@ public class MovieDetail extends AppCompatActivity {
             fetchMovieRecommendations(movieId);
         }
 
+        // Handle back button click
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getOnBackPressedDispatcher().onBackPressed();
+                onBackPressed();
             }
         });
     }
@@ -109,16 +107,27 @@ public class MovieDetail extends AppCompatActivity {
         MovieService.fetchMovieById(movieId, new MovieService.MovieDetailCallback() {
             @Override
             public void onSuccess(Movie movie) {
-                String release_year = Utils.getYear(movie.getRelease_date());
+                if (movie != null) {
+                    String releaseYear = Utils.getYear(movie.getRelease_date());
+                    String title = movie.getTitle();
+                    String overview = movie.getOverview();
+                    Double voteAverage = movie.getVote_average();
+                    Long runtime = movie.getRuntime();
+                    String posterPath = movie.getPoster_path();
 
-                movieTitle.setText(movie.getTitle() + " (" + release_year + ")");
-                movieOverview.setText(movie.getOverview());
-                movieVoteAverage.setText(String.format("%.1f", movie.getVote_average()));
-                movieRuntime.setText(movie.getRuntime() + " minutes");
-                String imageUrl = movie.getPoster_path();
+                    movieTitle.setText(title != null ? title + " (" + releaseYear + ")" : "Untitled Movie");
+                    movieOverview.setText(overview != null && !overview.isEmpty() ? overview : "Overview not available");
+                    movieVoteAverage.setText(voteAverage != null ? String.format("%.1f", voteAverage) : "No rating");
+                    movieRuntime.setText(runtime != null ? runtime + " minutes" : "Runtime not available");
 
-                if (!imageUrl.isEmpty() && imageUrl != null) {
-                    ImageService.loadImage(imageUrl, MovieDetail.this, movieImage);
+                    if (posterPath != null && !posterPath.isEmpty()) {
+                        ImageService.loadImage(posterPath, MovieDetail.this, movieImage);
+                    } else {
+                        movieImage.setImageResource(R.drawable.logo);
+                        movieImage.setMinimumWidth(150);
+                    }
+                } else {
+                    movieTitle.setText("Movie details not available.");
                 }
             }
 
@@ -138,9 +147,15 @@ public class MovieDetail extends AppCompatActivity {
         MovieService.fetchMovieCredits(movieId, new MovieService.CreditServiceCallback() {
             @Override
             public void onSuccess(List<Cast> castList) {
-                movieCasts.clear();
-                movieCasts.addAll(castList);
-                creditAdapter.notifyDataSetChanged();
+                if (castList != null && !castList.isEmpty()) {
+                    movieCasts.clear();
+                    movieCasts.addAll(castList);
+                    creditAdapter.notifyDataSetChanged();
+                } else {
+                    movieCasts.clear();
+                    creditAdapter.notifyDataSetChanged();
+                    movieTitle.setText("No cast information available.");
+                }
             }
 
             @Override
@@ -160,9 +175,15 @@ public class MovieDetail extends AppCompatActivity {
         MovieService.fetchMovieRecommendations(movieId, new MovieService.MovieServiceCallback() {
             @Override
             public void onSuccess(List<Movie> movies) {
-                movieRecommendations.clear();
-                movieRecommendations.addAll(movies);
-                movieAdapter.notifyDataSetChanged();
+                if (movies != null && !movies.isEmpty()) {
+                    movieRecommendations.clear();
+                    movieRecommendations.addAll(movies);
+                    movieAdapter.notifyDataSetChanged();
+                } else {
+                    movieRecommendations.clear();
+                    movieAdapter.notifyDataSetChanged();
+                    movieTitle.setText("No recommendations available.");
+                }
             }
 
             @Override
