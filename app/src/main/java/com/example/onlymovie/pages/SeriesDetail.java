@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -17,8 +18,10 @@ import com.example.onlymovie.adapter.CreditAdapter;
 import com.example.onlymovie.adapter.SeriesAdapter;
 import com.example.onlymovie.models.Cast;
 import com.example.onlymovie.models.Series;
+import com.example.onlymovie.service.FavoriteService;
 import com.example.onlymovie.service.ImageService;
 import com.example.onlymovie.service.SeriesService;
+import com.example.onlymovie.utils.Enum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +38,9 @@ public class SeriesDetail extends AppCompatActivity {
     private ArrayList<Cast> seriesCasts = new ArrayList<>();
     private ArrayList<Series> seriesRecommendationsList = new ArrayList<>();
 
+    private ImageButton favoriteButton;
+    private Boolean isFavorite = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +51,7 @@ public class SeriesDetail extends AppCompatActivity {
         seriesVoteAverage = findViewById(R.id.seriesVoteAverage);
         seriesImage = findViewById(R.id.seriesImage);
         backButton = findViewById(R.id.backButton);
+        favoriteButton = findViewById(R.id.toggleFavoriteButton);
         creditRecyclerView = findViewById(R.id.creditRecyclerView);
         seriesRecommendationView = findViewById(R.id.seriesRecommendationView);
 
@@ -84,12 +91,47 @@ public class SeriesDetail extends AppCompatActivity {
             fetchSeriesDetails(seriesId);
             fetchSeriesCasts(seriesId);
             fetchSeriesRecommendations(seriesId);
+            checkFavoriteState(seriesId);
         }
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onBackPressed();
+            }
+        });
+
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isFavorite = !isFavorite;
+
+                if (isFavorite) {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_filled);
+                    FavoriteService.addToFavorite(Enum.MEDIATYPE.Tv.name(), seriesId);
+                } else {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_empty);
+                    FavoriteService.removeFromFavorite(Enum.MEDIATYPE.Tv.name(), seriesId);
+                }
+            }
+        });
+    }
+
+    private void checkFavoriteState(Long seriesId) {
+        FavoriteService.checkFavoriteState(Enum.MEDIATYPE.Tv.name(), seriesId, new FavoriteService.CheckFavoriteCallback() {
+            @Override
+            public void onSuccess(Boolean isFavorite) {
+                SeriesDetail.this.isFavorite = isFavorite;
+                if (isFavorite) {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_filled);
+                } else {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_empty);
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("Series Detail", "Error checking favorite state: " + errorMessage);
             }
         });
     }

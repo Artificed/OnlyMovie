@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,10 +17,14 @@ import com.example.onlymovie.R;
 import com.example.onlymovie.adapter.CreditAdapter;
 import com.example.onlymovie.adapter.MovieAdapter;
 import com.example.onlymovie.models.Cast;
+import com.example.onlymovie.models.FavoriteItem;
 import com.example.onlymovie.models.Movie;
+import com.example.onlymovie.service.FavoriteService;
 import com.example.onlymovie.service.ImageService;
 import com.example.onlymovie.service.MovieService;
+import com.example.onlymovie.utils.Enum;
 import com.example.onlymovie.utils.Utils;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +35,13 @@ public class MovieDetail extends AppCompatActivity {
     private Button backButton;
     private Long movieId;
     private ImageView movieImage;
+    private ImageButton favoriteButton;
 
     private CreditAdapter creditAdapter;
     private MovieAdapter movieAdapter;
     private ArrayList<Cast> movieCasts = new ArrayList<>();
     private ArrayList<Movie> movieRecommendations = new ArrayList<>();
+    private Boolean isFavorite = false;
 
     private RecyclerView creditListView, movieRecommendationListView;
 
@@ -49,6 +56,7 @@ public class MovieDetail extends AppCompatActivity {
         movieRuntime = findViewById(R.id.movieRuntime);
         movieVoteAverage = findViewById(R.id.movieVoteAverage);
         backButton = findViewById(R.id.backButton);
+        favoriteButton = findViewById(R.id.toggleFavoriteButton);
         creditListView = findViewById(R.id.creditRecyclerView);
         movieRecommendationListView = findViewById(R.id.movieRecommendationView);
 
@@ -87,13 +95,67 @@ public class MovieDetail extends AppCompatActivity {
             fetchMovieById(movieId);
             fetchMovieCasts(movieId);
             fetchMovieRecommendations(movieId);
+            checkFavoriteState(movieId);
+            fetchFavorites();
         }
 
-        // Handle back button click
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onBackPressed();
+            }
+        });
+
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isFavorite = !isFavorite;
+
+                if (isFavorite) {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_filled);
+                    FavoriteService.addToFavorite(Enum.MEDIATYPE.Movie.name(), movieId);
+                } else {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_empty);
+                    FavoriteService.removeFromFavorite(Enum.MEDIATYPE.Movie.name(), movieId);
+                }
+            }
+        });
+    }
+
+    private void fetchFavorites() {
+
+        FavoriteService.fetchAllFavorites(new FavoriteService.FetchAllFavoritesCallback() {
+            @Override
+            public void onSuccess(List<FavoriteItem> favorites) {
+                for (FavoriteItem favorite : favorites) {
+                    Log.d("FavoriteItem", "ID: " + favorite.getId() + ", MediaType: " + favorite.getMediaType());
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("MovieDetail", "Error fetching favorites: " + errorMessage);
+            }
+        });
+
+
+    }
+
+    private void checkFavoriteState(Long movieId) {
+        FavoriteService.checkFavoriteState(Enum.MEDIATYPE.Movie.name(), movieId, new FavoriteService.CheckFavoriteCallback() {
+            @Override
+            public void onSuccess(Boolean isFavorite) {
+                MovieDetail.this.isFavorite = isFavorite;
+                if (isFavorite) {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_filled);
+                } else {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_empty);
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("MovieDetail", "Error checking favorite state: " + errorMessage);
             }
         });
     }

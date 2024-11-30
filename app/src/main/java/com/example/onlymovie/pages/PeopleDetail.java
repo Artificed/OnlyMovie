@@ -2,8 +2,10 @@ package com.example.onlymovie.pages;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,6 +17,7 @@ import com.example.onlymovie.R;
 import com.example.onlymovie.adapter.MovieCreditAdapter;
 import com.example.onlymovie.models.MovieCredit;
 import com.example.onlymovie.models.People;
+import com.example.onlymovie.service.FavoriteService;
 import com.example.onlymovie.service.ImageService;
 import com.example.onlymovie.service.PeopleService;
 import com.example.onlymovie.utils.Enum;
@@ -33,6 +36,8 @@ public class PeopleDetail extends AppCompatActivity {
     private ArrayList<MovieCredit> movieCredits = new ArrayList<>();
 
     private RecyclerView personMovieCreditsView;
+    private ImageButton favoriteButton;
+    private Boolean isFavorite = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +47,7 @@ public class PeopleDetail extends AppCompatActivity {
         actorName = findViewById(R.id.actorName);
         actorImage = findViewById(R.id.actorImage);
         backButton = findViewById(R.id.backButton);
+        favoriteButton = findViewById(R.id.toggleFavoriteButton);
         actorBiography = findViewById(R.id.actorBiography);
         actorBirthday = findViewById(R.id.actorBirthday);
         actorPopularity = findViewById(R.id.actorPopularity);
@@ -74,6 +80,40 @@ public class PeopleDetail extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
+
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isFavorite = !isFavorite;
+
+                if (isFavorite) {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_filled);
+                    FavoriteService.addToFavorite(Enum.MEDIATYPE.Person.name(), personId);
+                } else {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_empty);
+                    FavoriteService.removeFromFavorite(Enum.MEDIATYPE.Person.name(), personId);
+                }
+            }
+        });
+    }
+
+    private void checkFavoriteState(Long personId) {
+        FavoriteService.checkFavoriteState(Enum.MEDIATYPE.Person.name(), personId, new FavoriteService.CheckFavoriteCallback() {
+            @Override
+            public void onSuccess(Boolean isFavorite) {
+                PeopleDetail.this.isFavorite = isFavorite;
+                if (isFavorite) {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_filled);
+                } else {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_empty);
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("People Detail", "Error checking favorite state: " + errorMessage);
             }
         });
     }
@@ -132,7 +172,6 @@ public class PeopleDetail extends AppCompatActivity {
                     movieCredits.addAll(casts);
                     movieCreditAdapter.notifyDataSetChanged();
                 } else {
-                    // Handle empty list or no credits
                     movieCredits.clear();
                     movieCreditAdapter.notifyDataSetChanged();
                 }
@@ -140,7 +179,7 @@ public class PeopleDetail extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                // Handle failure to fetch credits
+                actorName.setText("Failed to fetch person details");
             }
         });
     }
@@ -159,7 +198,6 @@ public class PeopleDetail extends AppCompatActivity {
                     movieCredits.addAll(crew);
                     movieCreditAdapter.notifyDataSetChanged();
                 } else {
-                    // Handle empty list or no credits
                     movieCredits.clear();
                     movieCreditAdapter.notifyDataSetChanged();
                 }

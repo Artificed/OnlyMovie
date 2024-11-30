@@ -19,12 +19,16 @@ import java.util.HashMap;
 
 public class UserService {
 
-    private FirebaseAuth mAuth;
+    private static FirebaseAuth mAuth;
     private FirebaseFirestore db;
 
     public UserService() {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
+    }
+
+    public static String getCurrentUserId() {
+        return mAuth.getCurrentUser().getUid();
     }
 
     // Load the user's profile image using Glide
@@ -36,7 +40,6 @@ public class UserService {
         }
     }
 
-    // Update the username
     public void updateUsername(Context context, String newUsername) {
         if (newUsername.isEmpty()) {
             Toast.makeText(context, "Username cannot be empty", Toast.LENGTH_SHORT).show();
@@ -64,7 +67,6 @@ public class UserService {
                 });
     }
 
-    // In UserService.java
     public void updateFullname(Context context, String newFullname) {
         if (newFullname.isEmpty()) {
             Toast.makeText(context, "Full name cannot be empty", Toast.LENGTH_SHORT).show();
@@ -112,7 +114,6 @@ public class UserService {
         }
     }
 
-    // Load the current user's profile data into the profile UI
     public void loadUserProfileData(Context context, String userId, TextView profileFullname, TextView profileUsername, ImageView profileImageView) {
         db.collection("users").document(userId)
                 .get()

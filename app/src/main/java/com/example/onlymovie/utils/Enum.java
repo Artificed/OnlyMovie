@@ -4,7 +4,8 @@ public class Enum {
 
     public static enum MEDIATYPE {
         Movie,
-        Tv
+        Tv,
+        Person
     }
 
     public static enum KNOWN_FOR_DEPARTMENT {
