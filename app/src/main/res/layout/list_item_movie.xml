@@ -9,8 +9,8 @@
         android:id="@+id/movieImage"
         android:layout_width="wrap_content"
         android:layout_height="150dp"
-        android:layout_gravity="start"
-        android:src="@drawable/ic_launcher_background"/>
+        android:src="@drawable/ic_launcher_background"
+        android:scaleType="fitCenter" />
 
     <TextView
         android:id="@+id/movieTitle"

@@ -68,7 +68,7 @@ public class MovieCreditAdapter extends RecyclerView.Adapter<MovieCreditAdapter.
                         .error(R.drawable.ic_launcher_background)
                         .into(movieImage);
             } else {
-                movieImage.setImageResource(R.drawable.ic_launcher_background);
+                movieImage.setImageResource(R.drawable.logo);
             }
 
 

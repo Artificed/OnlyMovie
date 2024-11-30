@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,10 +17,14 @@ import com.example.onlymovie.R;
 import com.example.onlymovie.adapter.CreditAdapter;
 import com.example.onlymovie.adapter.MovieAdapter;
 import com.example.onlymovie.models.Cast;
+import com.example.onlymovie.models.FavoriteItem;
 import com.example.onlymovie.models.Movie;
+import com.example.onlymovie.service.FavoriteService;
 import com.example.onlymovie.service.ImageService;
 import com.example.onlymovie.service.MovieService;
+import com.example.onlymovie.utils.Enum;
 import com.example.onlymovie.utils.Utils;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +35,13 @@ public class MovieDetail extends AppCompatActivity {
     private Button backButton;
     private Long movieId;
     private ImageView movieImage;
+    private ImageButton favoriteButton;
 
     private CreditAdapter creditAdapter;
     private MovieAdapter movieAdapter;
     private ArrayList<Cast> movieCasts = new ArrayList<>();
     private ArrayList<Movie> movieRecommendations = new ArrayList<>();
+    private Boolean isFavorite = false;
 
     private RecyclerView creditListView, movieRecommendationListView;
 
@@ -44,13 +50,13 @@ public class MovieDetail extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
-        // Area Linking XML Component to Java
         movieImage = findViewById(R.id.movieImage);
         movieTitle = findViewById(R.id.movieTitle);
         movieOverview = findViewById(R.id.movieOverview);
         movieRuntime = findViewById(R.id.movieRuntime);
         movieVoteAverage = findViewById(R.id.movieVoteAverage);
         backButton = findViewById(R.id.backButton);
+        favoriteButton = findViewById(R.id.toggleFavoriteButton);
         creditListView = findViewById(R.id.creditRecyclerView);
         movieRecommendationListView = findViewById(R.id.movieRecommendationView);
 
@@ -78,7 +84,6 @@ public class MovieDetail extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         movieRecommendationListView.setAdapter(movieAdapter);
 
         Intent intent = getIntent();
@@ -90,12 +95,67 @@ public class MovieDetail extends AppCompatActivity {
             fetchMovieById(movieId);
             fetchMovieCasts(movieId);
             fetchMovieRecommendations(movieId);
+            checkFavoriteState(movieId);
+            fetchFavorites();
         }
 
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getOnBackPressedDispatcher().onBackPressed();
+                onBackPressed();
+            }
+        });
+
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                isFavorite = !isFavorite;
+
+                if (isFavorite) {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_filled);
+                    FavoriteService.addToFavorite(Enum.MEDIATYPE.Movie.name(), movieId);
+                } else {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_empty);
+                    FavoriteService.removeFromFavorite(Enum.MEDIATYPE.Movie.name(), movieId);
+                }
+            }
+        });
+    }
+
+    private void fetchFavorites() {
+
+        FavoriteService.fetchAllFavorites(new FavoriteService.FetchAllFavoritesCallback() {
+            @Override
+            public void onSuccess(List<FavoriteItem> favorites) {
+                for (FavoriteItem favorite : favorites) {
+                    Log.d("FavoriteItem", "ID: " + favorite.getId() + ", MediaType: " + favorite.getMediaType());
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("MovieDetail", "Error fetching favorites: " + errorMessage);
+            }
+        });
+
+
+    }
+
+    private void checkFavoriteState(Long movieId) {
+        FavoriteService.checkFavoriteState(Enum.MEDIATYPE.Movie.name(), movieId, new FavoriteService.CheckFavoriteCallback() {
+            @Override
+            public void onSuccess(Boolean isFavorite) {
+                MovieDetail.this.isFavorite = isFavorite;
+                if (isFavorite) {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_filled);
+                } else {
+                    favoriteButton.setImageResource(R.drawable.ic_heart_empty);
+                }
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Log.e("MovieDetail", "Error checking favorite state: " + errorMessage);
             }
         });
     }
@@ -109,16 +169,27 @@ public class MovieDetail extends AppCompatActivity {
         MovieService.fetchMovieById(movieId, new MovieService.MovieDetailCallback() {
             @Override
             public void onSuccess(Movie movie) {
-                String release_year = Utils.getYear(movie.getRelease_date());
+                if (movie != null) {
+                    String releaseYear = Utils.getYear(movie.getRelease_date());
+                    String title = movie.getTitle();
+                    String overview = movie.getOverview();
+                    Double voteAverage = movie.getVote_average();
+                    Long runtime = movie.getRuntime();
+                    String posterPath = movie.getPoster_path();
 
-                movieTitle.setText(movie.getTitle() + " (" + release_year + ")");
-                movieOverview.setText(movie.getOverview());
-                movieVoteAverage.setText(String.format("%.1f", movie.getVote_average()));
-                movieRuntime.setText(movie.getRuntime() + " minutes");
-                String imageUrl = movie.getPoster_path();
+                    movieTitle.setText(title != null ? title + " (" + releaseYear + ")" : "Untitled Movie");
+                    movieOverview.setText(overview != null && !overview.isEmpty() ? overview : "Overview not available");
+                    movieVoteAverage.setText(voteAverage != null ? String.format("%.1f", voteAverage) : "No rating");
+                    movieRuntime.setText(runtime != null ? runtime + " minutes" : "Runtime not available");
 
-                if (!imageUrl.isEmpty() && imageUrl != null) {
-                    ImageService.loadImage(imageUrl, MovieDetail.this, movieImage);
+                    if (posterPath != null && !posterPath.isEmpty()) {
+                        ImageService.loadImage(posterPath, MovieDetail.this, movieImage);
+                    } else {
+                        movieImage.setImageResource(R.drawable.logo);
+                        movieImage.setMinimumWidth(150);
+                    }
+                } else {
+                    movieTitle.setText("Movie details not available.");
                 }
             }
 
@@ -138,9 +209,15 @@ public class MovieDetail extends AppCompatActivity {
         MovieService.fetchMovieCredits(movieId, new MovieService.CreditServiceCallback() {
             @Override
             public void onSuccess(List<Cast> castList) {
-                movieCasts.clear();
-                movieCasts.addAll(castList);
-                creditAdapter.notifyDataSetChanged();
+                if (castList != null && !castList.isEmpty()) {
+                    movieCasts.clear();
+                    movieCasts.addAll(castList);
+                    creditAdapter.notifyDataSetChanged();
+                } else {
+                    movieCasts.clear();
+                    creditAdapter.notifyDataSetChanged();
+                    movieTitle.setText("No cast information available.");
+                }
             }
 
             @Override
@@ -160,9 +237,15 @@ public class MovieDetail extends AppCompatActivity {
         MovieService.fetchMovieRecommendations(movieId, new MovieService.MovieServiceCallback() {
             @Override
             public void onSuccess(List<Movie> movies) {
-                movieRecommendations.clear();
-                movieRecommendations.addAll(movies);
-                movieAdapter.notifyDataSetChanged();
+                if (movies != null && !movies.isEmpty()) {
+                    movieRecommendations.clear();
+                    movieRecommendations.addAll(movies);
+                    movieAdapter.notifyDataSetChanged();
+                } else {
+                    movieRecommendations.clear();
+                    movieAdapter.notifyDataSetChanged();
+                    movieTitle.setText("No recommendations available.");
+                }
             }
 
             @Override
