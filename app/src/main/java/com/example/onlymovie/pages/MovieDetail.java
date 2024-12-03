@@ -96,7 +96,6 @@ public class MovieDetail extends AppCompatActivity {
             fetchMovieCasts(movieId);
             fetchMovieRecommendations(movieId);
             checkFavoriteState(movieId);
-            fetchFavorites();
         }
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -122,24 +121,6 @@ public class MovieDetail extends AppCompatActivity {
         });
     }
 
-    private void fetchFavorites() {
-
-        FavoriteService.fetchAllFavorites(new FavoriteService.FetchAllFavoritesCallback() {
-            @Override
-            public void onSuccess(List<FavoriteItem> favorites) {
-                for (FavoriteItem favorite : favorites) {
-                    Log.d("FavoriteItem", "ID: " + favorite.getId() + ", MediaType: " + favorite.getMediaType());
-                }
-            }
-
-            @Override
-            public void onFailure(String errorMessage) {
-                Log.e("MovieDetail", "Error fetching favorites: " + errorMessage);
-            }
-        });
-
-
-    }
 
     private void checkFavoriteState(Long movieId) {
         FavoriteService.checkFavoriteState(Enum.MEDIATYPE.Movie.name(), movieId, new FavoriteService.CheckFavoriteCallback() {

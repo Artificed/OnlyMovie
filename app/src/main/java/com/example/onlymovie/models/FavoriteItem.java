@@ -2,18 +2,16 @@ package com.example.onlymovie.models;
 
 public class FavoriteItem {
     private Long id;
-    private String mediaType;
 
-    public FavoriteItem(Long id, String mediaType) {
+    public FavoriteItem(Long id) {
         this.id = id;
-        this.mediaType = mediaType;
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getMediaType() {
-        return mediaType;
+    public void setId(Long id) {
+        this.id = id;
     }
 }

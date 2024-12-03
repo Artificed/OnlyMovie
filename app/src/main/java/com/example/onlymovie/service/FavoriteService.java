@@ -75,44 +75,60 @@ public class FavoriteService {
                 });
     }
 
-    public static void fetchAllFavorites(FetchAllFavoritesCallback callback) {
-
+    public static void fetchFavoriteByMediaType(String mediaType, FetchByMediaTypeCallback callback) {
         String userId = mAuth.getCurrentUser().getUid();
-        Log.d("FavoriteService", "Fetching favorites for user: " + userId);
 
-        List<String> mediaTypes = Arrays.asList("Movie", "Tv", "Person");
-        List<FavoriteItem> allFavorites = new ArrayList<>();
+        List<Long> favoriteMediaList = new ArrayList<>();
 
-        final int[] queriesCompleted = {0};
-
-        for (String mediaType : mediaTypes) {
-            db.collection("favorites")
-                    .document(userId)
-                    .collection(mediaType)
-                    .orderBy("timestamp", Query.Direction.DESCENDING)
-                    .get()
-                    .addOnSuccessListener(queryDocumentSnapshots -> {
-                        if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
-                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
-                                Long id = doc.getLong("id");
-                                if (id != null) {
-                                    allFavorites.add(new FavoriteItem(id, mediaType));
-                                }
+        db.collection("favorites")
+                .document(userId)
+                .collection(mediaType)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
+                        for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                            Long id = doc.getLong("id");
+                            if (id != null) {
+                                favoriteMediaList.add(id);
                             }
-                            Log.d("FavoriteService", "Fetched " + queryDocumentSnapshots.size() + " " + mediaType + " favorites.");
-                        }
 
-                        queriesCompleted[0]++;
-                        if (queriesCompleted[0] == mediaTypes.size()) {
-                            Log.d("FavoriteService", "All queries finished, invoking callback.");
-                            callback.onSuccess(allFavorites);
                         }
-                    })
-                    .addOnFailureListener(e -> {
-                        callback.onFailure("Error fetching favorites: " + e.getMessage());
-                    });
-        }
+                        callback.onSuccess(favoriteMediaList);
+                        Log.d("FavoriteService", "Fetched " + favoriteMediaList + " " + mediaType + " favorites.");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure("Error fetching favorites: " + e.getMessage());
+                    Log.d("error", "firebase error");
+                });
     }
+
+//    public static void fetchFavoriteByMediaTypes(String mediaType, FetchAllFavoritesCallback callback) {
+//
+//        String userId = mAuth.getCurrentUser().getUid();
+//
+//        List<FavoriteItem> favoriteList = new ArrayList<>();
+//
+//            db.collection("favorites")
+//                    .document(userId)
+//                    .collection(mediaType)
+//                    .get()
+//                    .addOnSuccessListener(queryDocumentSnapshots -> {
+//                        if (queryDocumentSnapshots != null && !queryDocumentSnapshots.isEmpty()) {
+//                            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+//                                Long id = doc.getLong("id");
+//                                if (id != null) {
+//                                    favoriteList.add(new FavoriteItem(id));
+//                                }
+//                            }
+//                            Log.d("FavoriteService", "Fetched " + queryDocumentSnapshots.size() + " " + mediaType + " favorites.");
+//                        }
+//                    })
+//                    .addOnFailureListener(e -> {
+//                        callback.onFailure("Error fetching favorites: " + e.getMessage());
+//                        Log.d("error", "firebase error");
+//                    });
+//    }
 
 
 
@@ -121,8 +137,13 @@ public class FavoriteService {
         void onFailure(String errorMessage);
     }
 
-    public interface FetchAllFavoritesCallback {
-        void onSuccess(List<FavoriteItem> favorites);
+    public interface FetchByMediaTypeCallback {
+        void onSuccess(List<Long> favorites);
         void onFailure(String errorMessage);
     }
+
+//    public interface FetchAllFavoritesCallback {
+//        void onSuccess(List<FavoriteItem> favorites);
+//        void onFailure(String errorMessage);
+//    }
 }
