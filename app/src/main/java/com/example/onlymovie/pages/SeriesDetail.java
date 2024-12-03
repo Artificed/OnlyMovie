@@ -2,12 +2,12 @@ package com.example.onlymovie.pages;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,14 +31,16 @@ public class SeriesDetail extends AppCompatActivity {
     private TextView seriesName, seriesOverview, seriesVoteAverage;
     private ImageView seriesImage;
     private Long seriesId;
+    private ImageButton favoriteButton;
     private Button backButton;
+
     private RecyclerView creditRecyclerView, seriesRecommendationView;
     private SeriesAdapter seriesAdapter;
     private CreditAdapter creditAdapter;
+
     private ArrayList<Cast> seriesCasts = new ArrayList<>();
     private ArrayList<Series> seriesRecommendationsList = new ArrayList<>();
 
-    private ImageButton favoriteButton;
     private Boolean isFavorite = false;
 
     @Override
@@ -52,6 +54,7 @@ public class SeriesDetail extends AppCompatActivity {
         seriesImage = findViewById(R.id.seriesImage);
         backButton = findViewById(R.id.backButton);
         favoriteButton = findViewById(R.id.toggleFavoriteButton);
+
         creditRecyclerView = findViewById(R.id.creditRecyclerView);
         seriesRecommendationView = findViewById(R.id.seriesRecommendationView);
 
@@ -64,8 +67,8 @@ public class SeriesDetail extends AppCompatActivity {
         creditAdapter = new CreditAdapter(this, seriesCasts, new CreditAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Cast cast) {
-                Intent intent = new Intent(SeriesDetail.this, PeopleDetail.class);
-                intent.putExtra("person-id", cast.getId());
+                Intent intent = new Intent(getApplicationContext(), PeopleDetail.class);
+                intent.putExtra(Enum.IntentValue.personId.name(), cast.getId());
                 startActivity(intent);
             }
         });
@@ -74,19 +77,18 @@ public class SeriesDetail extends AppCompatActivity {
         seriesAdapter = new SeriesAdapter(this, seriesRecommendationsList, new SeriesAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Series series) {
-                Intent intent = new Intent(SeriesDetail.this, SeriesDetail.class);
-                intent.putExtra("series-id", series.getId());
+                Intent intent = new Intent(getApplicationContext(), SeriesDetail.class);
+                intent.putExtra(Enum.IntentValue.seriesId.name(), series.getId());
                 startActivity(intent);
             }
         });
         seriesRecommendationView.setAdapter(seriesAdapter);
 
         Intent intent = getIntent();
-        seriesId = intent.getLongExtra("series-id", -1);
-        Log.d("SeriesDetail", "Series ID: " + seriesId);
+        seriesId = intent.getLongExtra(Enum.IntentValue.seriesId.name(), -1);
 
         if (seriesId == -1) {
-            seriesName.setText("Invalid Series Id");
+            Toast.makeText(getApplicationContext(), "Invalid Series Id", Toast.LENGTH_SHORT).show();
         } else {
             fetchSeriesDetails(seriesId);
             fetchSeriesCasts(seriesId);
@@ -97,7 +99,7 @@ public class SeriesDetail extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBackPressed();
+                getOnBackPressedDispatcher().onBackPressed();
             }
         });
 
@@ -131,14 +133,14 @@ public class SeriesDetail extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("Series Detail", "Error checking favorite state: " + errorMessage);
+                Toast.makeText(getApplicationContext(), "Error checking favorite state", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fetchSeriesDetails(Long seriesId) {
-        if (seriesId == 0) {
-            seriesName.setText("Invalid Series Id");
+        if (seriesId == -1) {
+            Toast.makeText(getApplicationContext(), "Invalid Series Id", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -162,20 +164,20 @@ public class SeriesDetail extends AppCompatActivity {
                         seriesImage.setMinimumWidth(150);
                     }
                 } else {
-                    seriesName.setText("Series details not available");
+                    Toast.makeText(getApplicationContext(), "Series detail's not available", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                seriesName.setText("Failed to fetch series details");
+                Toast.makeText(getApplicationContext(), "Failed to fetch series details", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fetchSeriesCasts(Long seriesId) {
-        if (seriesId == 0) {
-            seriesName.setText("Invalid Series Id");
+        if (seriesId == -1) {
+            Toast.makeText(getApplicationContext(), "Invalid Series Id", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -189,20 +191,20 @@ public class SeriesDetail extends AppCompatActivity {
                 } else {
                     seriesCasts.clear();
                     creditAdapter.notifyDataSetChanged();
-                    seriesName.setText("No cast information available");
+                    Toast.makeText(getApplicationContext(), "Error fetching casts information", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                seriesName.setText("Failed to load cast information");
+                Toast.makeText(getApplicationContext(), "Error fetching casts information", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fetchSeriesRecommendations(Long seriesId) {
-        if (seriesId == 0) {
-            seriesName.setText("Invalid Series Id");
+        if (seriesId == -1) {
+            Toast.makeText(getApplicationContext(), "Invalid Series Id", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -216,13 +218,13 @@ public class SeriesDetail extends AppCompatActivity {
                 } else {
                     seriesRecommendationsList.clear();
                     seriesAdapter.notifyDataSetChanged();
-                    seriesName.setText("No recommendations available");
+                    Toast.makeText(getApplicationContext(), "Series Recommendation's not available", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                seriesName.setText("Failed to load series recommendations");
+                Toast.makeText(getApplicationContext(), "Series Recommendation's not available", Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.onlymovie.R;
+import com.example.onlymovie.utils.Enum;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,7 +32,6 @@ public class UserService {
         return mAuth.getCurrentUser().getUid();
     }
 
-    // Load the user's profile image using Glide
     public void loadProfileImage(Context context, String imageUrl, ImageView imageView) {
         if (imageUrl != null && !imageUrl.isEmpty()) {
             Glide.with(context).load(imageUrl).into(imageView);
@@ -48,14 +48,13 @@ public class UserService {
 
         String userId = mAuth.getCurrentUser().getUid();
 
-        db.collection("users").whereEqualTo("username", newUsername)
+        db.collection(Enum.FirebaseCollection.users.name()).whereEqualTo("username", newUsername)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
                         Toast.makeText(context, "Username already exists. Please choose another.", Toast.LENGTH_SHORT).show();
                     } else {
-                        // Update username in Firestore
-                        DocumentReference userDocRef = db.collection("users").document(userId);
+                        DocumentReference userDocRef = db.collection(Enum.FirebaseCollection.users.name()).document(userId);
                         userDocRef.update("username", newUsername)
                                 .addOnSuccessListener(aVoid -> {
                                     Toast.makeText(context, "Username updated successfully", Toast.LENGTH_SHORT).show();
@@ -74,7 +73,7 @@ public class UserService {
         }
 
         String userId = mAuth.getCurrentUser().getUid();
-        db.collection("users").document(userId)
+        db.collection(Enum.FirebaseCollection.users.name()).document(userId)
                 .update("fullName", newFullname)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(context, "Full name updated successfully", Toast.LENGTH_SHORT).show();
@@ -87,7 +86,7 @@ public class UserService {
 
     public void updateImageUrlInFirestore(Context context, String imageUrl) {
         String userId = mAuth.getCurrentUser().getUid();
-        DocumentReference userDocRef = db.collection("users").document(userId);
+        DocumentReference userDocRef = db.collection(Enum.FirebaseCollection.users.name()).document(userId);
         userDocRef.set(new HashMap<String, Object>() {{
             put("profileImageUrl", imageUrl);
         }}, SetOptions.merge()).addOnSuccessListener(aVoid -> {
@@ -115,7 +114,7 @@ public class UserService {
     }
 
     public void loadUserProfileData(Context context, String userId, TextView profileFullname, TextView profileUsername, ImageView profileImageView) {
-        db.collection("users").document(userId)
+        db.collection(Enum.FirebaseCollection.users.name()).document(userId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {

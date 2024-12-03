@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,6 +23,7 @@ import com.example.onlymovie.models.Series;
 import com.example.onlymovie.service.MovieService;
 import com.example.onlymovie.service.PeopleService;
 import com.example.onlymovie.service.SeriesService;
+import com.example.onlymovie.utils.Enum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +33,11 @@ public class Home extends AppCompatActivity {
 
     private TextView titleTrendingMovies, titleTrendingSeries, titleTrendingPeople;
     private RecyclerView movieListView, seriesListView, peopleListView;
+
     private ArrayList<Movie> movieList = new ArrayList<>();
     private ArrayList<Series> seriesList = new ArrayList<>();
     private ArrayList<Cast> peopleList = new ArrayList<>();
+
     private MovieAdapter movieAdapter;
     private SeriesAdapter seriesAdapter;
     private CreditAdapter creditAdapter;
@@ -58,6 +62,7 @@ public class Home extends AppCompatActivity {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         LinearLayoutManager layoutManager2 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         LinearLayoutManager layoutManager3 = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
         movieListView.setLayoutManager(layoutManager);
         seriesListView.setLayoutManager(layoutManager2);
         peopleListView.setLayoutManager(layoutManager3);
@@ -66,7 +71,7 @@ public class Home extends AppCompatActivity {
             @Override
             public void onItemClick(Movie movie) {
                 Intent intent = new Intent(Home.this, MovieDetail.class);
-                intent.putExtra("movie-id", movie.getId());
+                intent.putExtra(Enum.IntentValue.movieId.name(), movie.getId());
                 startActivity(intent);
             }
         });
@@ -77,7 +82,7 @@ public class Home extends AppCompatActivity {
             @Override
             public void onItemClick(Series series) {
                 Intent intent = new Intent(Home.this, SeriesDetail.class);
-                intent.putExtra("series-id", series.getId());
+                intent.putExtra(Enum.IntentValue.seriesId.name(), series.getId());
                 startActivity(intent);
             }
         });
@@ -87,7 +92,7 @@ public class Home extends AppCompatActivity {
             @Override
             public void onItemClick(Cast cast) {
                 Intent intent = new Intent(Home.this, PeopleDetail.class);
-                intent.putExtra("person-id", cast.getId());
+                intent.putExtra(Enum.IntentValue.personId.name(), cast.getId());
                 startActivity(intent);
             }
         });
@@ -114,7 +119,7 @@ public class Home extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                System.out.println("error");
+                Toast.makeText(Home.this, "Error fetching movie lists", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -128,7 +133,7 @@ public class Home extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                System.out.println("error");
+                Toast.makeText(Home.this, "Error fetching series lists", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -142,7 +147,7 @@ public class Home extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                System.out.println("error");
+                Toast.makeText(Home.this, "Error fetching people lists", Toast.LENGTH_SHORT).show();
             }
         });
     }

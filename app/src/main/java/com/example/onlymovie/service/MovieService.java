@@ -1,7 +1,5 @@
 package com.example.onlymovie.service;
 
-import android.util.Log;
-
 import com.example.onlymovie.models.Cast;
 import com.example.onlymovie.models.Movie;
 import com.example.onlymovie.models.SearchResult;
@@ -78,7 +76,6 @@ public class MovieService {
                     }
 
                     callback.onSuccess(castList);
-                    Log.d("API Response", "First 5 Casts: " + castList);
                 } else {
                     callback.onFailure("Error fetching movie credits");
                 }

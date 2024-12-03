@@ -2,12 +2,12 @@ package com.example.onlymovie.pages;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -17,14 +17,12 @@ import com.example.onlymovie.R;
 import com.example.onlymovie.adapter.CreditAdapter;
 import com.example.onlymovie.adapter.MovieAdapter;
 import com.example.onlymovie.models.Cast;
-import com.example.onlymovie.models.FavoriteItem;
 import com.example.onlymovie.models.Movie;
 import com.example.onlymovie.service.FavoriteService;
 import com.example.onlymovie.service.ImageService;
 import com.example.onlymovie.service.MovieService;
 import com.example.onlymovie.utils.Enum;
 import com.example.onlymovie.utils.Utils;
-import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,11 +37,13 @@ public class MovieDetail extends AppCompatActivity {
 
     private CreditAdapter creditAdapter;
     private MovieAdapter movieAdapter;
-    private ArrayList<Cast> movieCasts = new ArrayList<>();
-    private ArrayList<Movie> movieRecommendations = new ArrayList<>();
-    private Boolean isFavorite = false;
 
     private RecyclerView creditListView, movieRecommendationListView;
+
+    private ArrayList<Cast> movieCasts = new ArrayList<>();
+    private ArrayList<Movie> movieRecommendations = new ArrayList<>();
+
+    private Boolean isFavorite = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +69,8 @@ public class MovieDetail extends AppCompatActivity {
         creditAdapter = new CreditAdapter(this, movieCasts, new CreditAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Cast cast) {
-                Intent intent = new Intent(MovieDetail.this, PeopleDetail.class);
-                intent.putExtra("person-id", cast.getId());
+                Intent intent = new Intent(getApplicationContext(), PeopleDetail.class);
+                intent.putExtra(Enum.IntentValue.personId.name(), cast.getId());
                 startActivity(intent);
             }
         });
@@ -79,18 +79,18 @@ public class MovieDetail extends AppCompatActivity {
         movieAdapter = new MovieAdapter(this, movieRecommendations, new MovieAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Movie movie) {
-                Intent intent = new Intent(MovieDetail.this, MovieDetail.class);
-                intent.putExtra("movie-id", movie.getId());
+                Intent intent = new Intent(getApplicationContext(), MovieDetail.class);
+                intent.putExtra(Enum.IntentValue.movieId.name(), movie.getId());
                 startActivity(intent);
             }
         });
         movieRecommendationListView.setAdapter(movieAdapter);
 
         Intent intent = getIntent();
-        movieId = intent.getLongExtra("movie-id", -1);
+        movieId = intent.getLongExtra(Enum.IntentValue.movieId.name(), -1);
 
         if (movieId == -1) {
-            movieTitle.setText("Invalid Movie ID");
+            Toast.makeText(getApplicationContext(), "Invalid Movie Id", Toast.LENGTH_SHORT).show();
         } else {
             fetchMovieById(movieId);
             fetchMovieCasts(movieId);
@@ -136,14 +136,14 @@ public class MovieDetail extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("MovieDetail", "Error checking favorite state: " + errorMessage);
+                Toast.makeText(getApplicationContext(), "Error checking favorite state", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fetchMovieById(Long movieId) {
-        if (movieId == 0) {
-            movieTitle.setText("Invalid Movie ID");
+        if (movieId == -1) {
+            Toast.makeText(getApplicationContext(), "Invalid movie Id", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -170,20 +170,20 @@ public class MovieDetail extends AppCompatActivity {
                         movieImage.setMinimumWidth(150);
                     }
                 } else {
-                    movieTitle.setText("Movie details not available.");
+                    Toast.makeText(getApplicationContext(), "Movie detail's not available", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                movieTitle.setText("Failed to load movie details.");
+                Toast.makeText(getApplicationContext(), "Failed to load movie details", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fetchMovieCasts(Long movieId) {
-        if (movieId == 0) {
-            movieTitle.setText("Invalid Movie ID");
+        if (movieId == -1) {
+            Toast.makeText(getApplicationContext(), "Invalid movie Id", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -197,21 +197,20 @@ public class MovieDetail extends AppCompatActivity {
                 } else {
                     movieCasts.clear();
                     creditAdapter.notifyDataSetChanged();
-                    movieTitle.setText("No cast information available.");
+                    Toast.makeText(getApplicationContext(), "Cast information's not available", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("MovieDetail", "Failed to fetch movie credits: " + errorMessage);
-                movieTitle.setText("Failed to load cast information.");
+                Toast.makeText(getApplicationContext(), "Cast information's not available", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fetchMovieRecommendations(Long movieId) {
         if (movieId == 0) {
-            movieTitle.setText("Invalid Movie Id");
+            Toast.makeText(getApplicationContext(), "Invalid movie Id", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -225,13 +224,13 @@ public class MovieDetail extends AppCompatActivity {
                 } else {
                     movieRecommendations.clear();
                     movieAdapter.notifyDataSetChanged();
-                    movieTitle.setText("No recommendations available.");
+                    Toast.makeText(getApplicationContext(), "Movie recommendation's not available", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                movieTitle.setText("Failed to load movie recommendations.");
+                Toast.makeText(getApplicationContext(), "Movie recommendation's not available", Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentActivity;
 import com.bumptech.glide.Glide;
 import com.example.onlymovie.R;
 
-
 public class ImageService {
 
     private static String baseImageUrl = "https://image.tmdb.org/t/p/w300/";

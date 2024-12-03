@@ -2,12 +2,12 @@ package com.example.onlymovie.pages;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -52,10 +52,11 @@ public class PeopleDetail extends AppCompatActivity {
         actorBirthday = findViewById(R.id.actorBirthday);
         actorPopularity = findViewById(R.id.actorPopularity);
         personRole = findViewById(R.id.personRole);
+
         personMovieCreditsView = findViewById(R.id.personCombinedCredits);
 
         Intent intent = getIntent();
-        personId = intent.getLongExtra("person-id", -1);
+        personId = intent.getLongExtra(Enum.IntentValue.personId.name(), -1);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         personMovieCreditsView.setLayoutManager(layoutManager);
@@ -63,17 +64,18 @@ public class PeopleDetail extends AppCompatActivity {
         movieCreditAdapter = new MovieCreditAdapter(this, movieCredits, new MovieCreditAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(MovieCredit movie) {
-                Intent intent = new Intent(PeopleDetail.this, MovieDetail.class);
-                intent.putExtra("movie-id", movie.getId());
+                Intent intent = new Intent(getApplicationContext(), MovieDetail.class);
+                intent.putExtra(Enum.IntentValue.movieId.name(), movie.getId());
                 startActivity(intent);
             }
         });
         personMovieCreditsView.setAdapter(movieCreditAdapter);
 
         if (personId == -1) {
-            actorName.setText("Invalid person id");
+            Toast.makeText(getApplicationContext(), "Invalid Person Id", Toast.LENGTH_SHORT).show();
         } else {
             fetchPeopleDetail(personId);
+            checkFavoriteState(personId);
         }
 
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -113,14 +115,14 @@ public class PeopleDetail extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                Log.e("People Detail", "Error checking favorite state: " + errorMessage);
+                Toast.makeText(getApplicationContext(), "Error checking favorite state", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fetchPeopleDetail(Long personId) {
-        if (personId == 0) {
-            actorName.setText("Invalid person Id");
+        if (personId == -1) {
+            Toast.makeText(getApplicationContext(), "Invalid Person Id", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -152,15 +154,14 @@ public class PeopleDetail extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                actorName.setText("Failed to load person details.");
-                actorBiography.setText("Error: " + errorMessage);
+                Toast.makeText(getApplicationContext(), "Error fetching person details", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fetchActorMovieCredit(Long personId) {
-        if (personId == 0) {
-            actorName.setText("Invalid person Id");
+        if (personId == -1) {
+            Toast.makeText(getApplicationContext(), "Invalid Person Id", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -179,14 +180,14 @@ public class PeopleDetail extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                actorName.setText("Failed to fetch person details");
+                Toast.makeText(getApplicationContext(), "Error fetching person detail", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void fetchDirectorMovieCredit(Long personId) {
-        if (personId == 0) {
-            actorName.setText("Invalid person Id");
+        if (personId == -1) {
+            Toast.makeText(getApplicationContext(), "Invalid Person Id", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -205,7 +206,7 @@ public class PeopleDetail extends AppCompatActivity {
 
             @Override
             public void onFailure(String errorMessage) {
-                // Handle failure to fetch credits
+                Toast.makeText(getApplicationContext(), "Error fetching movie credits", Toast.LENGTH_SHORT).show();
             }
         });
     }

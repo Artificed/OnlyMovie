@@ -1,7 +1,6 @@
 package com.example.onlymovie.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,8 +72,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
                     searchCategory.setText(Enum.JOB.Director.name());
                 }
             }
-
-
 
             String imageUrl = result.getPoster_path();
             if (imageUrl == null || imageUrl.isEmpty()) {

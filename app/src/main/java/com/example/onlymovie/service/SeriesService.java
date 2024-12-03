@@ -1,7 +1,5 @@
 package com.example.onlymovie.service;
 
-import android.util.Log;
-
 import com.example.onlymovie.models.Cast;
 import com.example.onlymovie.models.Series;
 import com.example.onlymovie.response.CreditResponse;
@@ -28,7 +26,6 @@ public class SeriesService {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Series> seriesList = response.body().getResults();
                     callback.onSuccess(seriesList);
-                    Log.d("test", "data: " + seriesList);
                 } else {
                     callback.onFailure("Error fetching series");
                 }
@@ -73,9 +70,7 @@ public class SeriesService {
             public void onResponse(Call<CreditResponse> call, Response<CreditResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Cast> castList = response.body().getCast();
-
                     callback.onSuccess(castList);
-                    Log.d("API Response", "First 5 Casts: " + castList);
                 } else {
                     callback.onFailure("Error fetching series credits");
                 }
