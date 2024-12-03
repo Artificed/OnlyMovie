@@ -1,6 +1,7 @@
 package com.example.onlymovie.models;
 
 public class People {
+    private Long id;
     private String name;
     private String profile_path;
     private String biography;
@@ -63,5 +64,13 @@ public class People {
 
     public void setKnown_for_department(String known_for_department) {
         this.known_for_department = known_for_department;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

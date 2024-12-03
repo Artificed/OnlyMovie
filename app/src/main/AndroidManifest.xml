@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Material3.Light.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".pages.Profile"
+            android:exported="false" />
+        <activity
             android:name=".pages.Search"
             android:exported="false" />
         <activity
@@ -34,7 +37,7 @@
             android:name=".pages.Home"
             android:exported="false" />
         <activity
-            android:name=".pages.Profile"
+            android:name=".pages.EditProfile"
             android:exported="false" />
         <activity
             android:name=".pages.MainActivity"
