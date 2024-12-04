@@ -19,6 +19,7 @@ import com.example.onlymovie.R;
 import com.example.onlymovie.adapter.SearchAdapter;
 import com.example.onlymovie.models.SearchResult;
 import com.example.onlymovie.service.MovieService;
+import com.example.onlymovie.utils.Enum;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,18 +53,17 @@ public class Search extends AppCompatActivity {
         searchAdapter = new SearchAdapter(this, searchResults, new SearchAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(SearchResult result) {
-
                 if ("movie".equals(result.getMedia_type())) {
-                    Intent intent = new Intent(Search.this, MovieDetail.class);
-                    intent.putExtra("movie-id", result.getId());
+                    Intent intent = new Intent(getApplicationContext(), MovieDetail.class);
+                    intent.putExtra(Enum.IntentValue.movieId.name(), result.getId());
                     startActivity(intent);
                 } else if ("tv".equals(result.getMedia_type())) {
-                    Intent intent = new Intent(Search.this, SeriesDetail.class);
-                    intent.putExtra("series-id", result.getId());
+                    Intent intent = new Intent(getApplicationContext(), SeriesDetail.class);
+                    intent.putExtra(Enum.IntentValue.seriesId.name(), result.getId());
                     startActivity(intent);
                 } else if ("person".equals(result.getMedia_type())) {
-                    Intent intent = new Intent(Search.this, PeopleDetail.class);
-                    intent.putExtra("person-id", result.getId());
+                    Intent intent = new Intent(getApplicationContext(), PeopleDetail.class);
+                    intent.putExtra(Enum.IntentValue.personId.name(), result.getId());
                     startActivity(intent);
                 }
 

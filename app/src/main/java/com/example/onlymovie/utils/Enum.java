@@ -23,4 +23,15 @@ public class Enum {
         tv,
         person
     }
+
+    public static enum FirebaseCollection {
+        users,
+        favorites,
+    }
+
+    public static enum IntentValue {
+        movieId,
+        personId,
+        seriesId
+    }
 }

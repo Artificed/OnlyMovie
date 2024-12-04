@@ -87,7 +87,7 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onItemClick(Movie movie) {
                 Intent intent = new Intent(getApplicationContext(), MovieDetail.class);
-                intent.putExtra("movie-id", movie.getId());
+                intent.putExtra(Enum.IntentValue.movieId.name(), movie.getId());
                 startActivity(intent);
             }
         });
@@ -98,7 +98,7 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onItemClick(Series series) {
                 Intent intent = new Intent(getApplicationContext(), SeriesDetail.class);
-                intent.putExtra("series-id", series.getId());
+                intent.putExtra(Enum.IntentValue.seriesId.name(), series.getId());
                 startActivity(intent);
             }
         });
@@ -108,7 +108,7 @@ public class Profile extends AppCompatActivity {
             @Override
             public void onItemClick(People people) {
                 Intent intent = new Intent(getApplicationContext(), PeopleDetail.class);
-                intent.putExtra("person-id", people.getId());
+                intent.putExtra(Enum.IntentValue.personId.name(), people.getId());
                 startActivity(intent);
             }
         });
@@ -124,7 +124,7 @@ public class Profile extends AppCompatActivity {
             String userId = currentUser.getUid();
             userService.loadUserProfileData(Profile.this, userId, profileFullname, profileUsername, profileImage);
 
-            db.collection("users").document(userId).get()
+            db.collection(Enum.FirebaseCollection.users.name()).document(userId).get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult() != null) {
                             DocumentSnapshot documentSnapshot = task.getResult();

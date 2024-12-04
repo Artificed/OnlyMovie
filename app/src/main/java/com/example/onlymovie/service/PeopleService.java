@@ -1,9 +1,6 @@
 package com.example.onlymovie.service;
 
-import android.util.Log;
-
 import com.example.onlymovie.models.Cast;
-import com.example.onlymovie.models.Movie;
 import com.example.onlymovie.models.MovieCredit;
 import com.example.onlymovie.models.People;
 import com.example.onlymovie.response.MovieCreditResponse;
@@ -53,7 +50,6 @@ public class PeopleService {
             public void onResponse(Call<People> call, Response<People> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
-                    Log.d("response", "test" + response.body());
                 } else {
                     callback.onFailure("Error fetching people detail");
                 }
@@ -77,7 +73,6 @@ public class PeopleService {
                 if (response.isSuccessful() && response.body() != null) {
                     List<MovieCredit> movieList = response.body().getCast();
                     callback.onSuccess(movieList);
-                    Log.d("test", "response: " + movieList);
                 } else {
                     callback.onFailure("Error fetching people movie credit");
                 }
@@ -107,9 +102,7 @@ public class PeopleService {
                             directedMovies.add(movieCredit);
                         }
                     }
-
                     callback.onSuccess(directedMovies);
-                    Log.d("test", "Director Movies: " + directedMovies);
                 } else {
                     callback.onFailure("Error fetching people movie credit");
                 }

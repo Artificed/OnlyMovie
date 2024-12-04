@@ -3,8 +3,6 @@ package com.example.onlymovie.models;
 public class User {
     private String fullName, email, username;
 
-    public User() {}
-
     public User(String fullName, String email, String username) {
         this.fullName = fullName;
         this.email = email;

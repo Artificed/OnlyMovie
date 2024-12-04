@@ -1,6 +1,5 @@
 package com.example.onlymovie.response;
 
-import com.example.onlymovie.models.Movie;
 import com.example.onlymovie.models.SearchResult;
 
 import java.util.List;

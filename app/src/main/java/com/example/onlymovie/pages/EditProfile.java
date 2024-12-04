@@ -34,7 +34,6 @@ public class EditProfile extends AppCompatActivity {
     private FirebaseFirestore db;
     private ProgressBar progressBar;
     private TextView profileFullname, profileUsername;
-    private static final int PICK_IMAGE_REQUEST = 1;
     private Uri imageUri;
     private ImageView profileImageView;
     private ActivityResultLauncher<Intent> getImageLauncher;
@@ -121,8 +120,6 @@ public class EditProfile extends AppCompatActivity {
                 if (!newFullname.isEmpty()) {
                     profileFullname.setText(newFullname);
                 }
-
-
 
                 new Handler().postDelayed(() -> {
                     editProfileButton.setEnabled(true);
